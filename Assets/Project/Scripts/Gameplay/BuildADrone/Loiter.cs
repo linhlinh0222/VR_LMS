@@ -58,7 +58,7 @@ namespace Oculus.Interaction.ComprehensiveSample
             if (_tracker.Subject is MonoBehaviour b && b.TryGetComponent<Rigidbody>(out var rb) && !rb.isKinematic)
             {
                 rb.angularVelocity = Vector3.zero;
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
             }
         }
 

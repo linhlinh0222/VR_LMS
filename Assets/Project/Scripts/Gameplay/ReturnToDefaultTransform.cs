@@ -36,7 +36,7 @@ namespace Oculus.Interaction.ComprehensiveSample
             _objectToMove.SetPose(_tidyPose);
             if (_objectToMove.TryGetComponent<Rigidbody>(out var rb))
             {
-                rb.velocity = rb.angularVelocity = Vector3.zero;
+                rb.linearVelocity = rb.angularVelocity = Vector3.zero;
             }
             if (!IsTidy()) enabled = false;
         }

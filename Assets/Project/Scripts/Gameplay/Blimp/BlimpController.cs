@@ -88,7 +88,7 @@ namespace Oculus.Interaction.ComprehensiveSample
             if (!_canMove)
                 return;
 
-            _blimpRB.velocity = _moveSpeed * Time.deltaTime * -_blimp.transform.right;
+            _blimpRB.linearVelocity = _moveSpeed * Time.deltaTime * -_blimp.transform.right;
         }
 
         public void BeginUse() { _canMove = true; }

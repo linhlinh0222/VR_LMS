@@ -69,7 +69,7 @@ namespace Oculus.Interaction.ComprehensiveSample
             Vector3 velocityTarget = (positionDelta * velocityMagic) * deltaTime;
             if (float.IsNaN(velocityTarget.x) == false)
             {
-                rb.velocity = Vector3.MoveTowards(rb.velocity, velocityTarget, 100f);
+                rb.linearVelocity = Vector3.MoveTowards(rb.linearVelocity, velocityTarget, 100f);
             }
         }
     }

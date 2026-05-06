@@ -86,3 +86,13 @@ Assets/TextMesh Pro.meta
 !*.lib
 /.vs/
 .DS_Store
+
+# Local AI/MCP/Codex workspace state and visual probes
+/.agents/
+/.claude/
+/.codex/
+/.vscode/
+/.tmp_*
+/.tmp-*
+/GeneratedAssets/
+Unity-FirstHand.slnx

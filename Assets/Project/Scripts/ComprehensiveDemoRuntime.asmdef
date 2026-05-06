@@ -11,9 +11,11 @@
         "GUID:6607b780f0f7846258ca9a8a94a41218",
         "GUID:f5eda1afa2a1241a59c4db6830e1c890",
         "GUID:e545cc0678493234a9368f4e470c29e8",
-        "GUID:4504b1a6e0fdcc3498c30b266e4a63bf"
-    ],
-    "includePlatforms": [],
+        "GUID:4504b1a6e0fdcc3498c30b266e4a63bf",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95"
+        ],
+"includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
