@@ -7686,8 +7686,8 @@ MonoBehaviour:
   rightHandVisibility: {fileID: 130975483}
   trainingGhostHandsMode: 1
   defaultActiveHand: 1
-  leftHandIdleLocalPosition: {x: -0.28, y: -0.18, z: 0.64}
-  rightHandIdleLocalPosition: {x: 0.28, y: -0.18, z: 0.64}
+  leftHandIdleLocalPosition: {x: 0.28, y: -0.18, z: 0.64}
+  rightHandIdleLocalPosition: {x: -0.28, y: -0.18, z: 0.64}
   leftHandIdleLocalEuler: {x: 0, y: 180, z: 90}
   rightHandIdleLocalEuler: {x: 0, y: 180, z: 90}
   leftAttachLocalPosition: {x: 0.035, y: 0.162, z: -0.07}

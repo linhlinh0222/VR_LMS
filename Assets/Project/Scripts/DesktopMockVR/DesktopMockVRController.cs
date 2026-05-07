@@ -230,17 +230,20 @@ public sealed class DesktopMockVRController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            _activeHand = DesktopHandSide.Left;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        // Alpha (top row) AND Keypad (numpad) variants — Vietnamese IME may eat top-row 2/3 (huyền/hỏi diacritics).
+        // Keys 1↔2 are mapped inverse-to-transform-name because leftHand/rightHand idle positions were swapped:
+        // key 1 (user's "tay 1", on left side of view) drives Right transform; key 2 drives Left transform.
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
         {
             _activeHand = DesktopHandSide.Right;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            _activeHand = DesktopHandSide.Left;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
         {
             _activeHand = DesktopHandSide.Both;
         }

@@ -96,3 +96,11 @@ Assets/TextMesh Pro.meta
 /.tmp-*
 /GeneratedAssets/
 Unity-FirstHand.slnx
+
+# MCP plugin runtime config (contains user's Bearer token — never commit)
+/.mcp.json
+
+# Local manifest backups created during MCP setup workarounds
+/Packages/*.backup-*
+/Packages/manifest.before-speedfix.json
+/Logs/
