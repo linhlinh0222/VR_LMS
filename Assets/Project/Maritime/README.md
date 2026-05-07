@@ -64,6 +64,15 @@ float           IHeadingProvider  <---  CameraHeadingProvider
   `NormalizedValue` so existing `MaritimeTelegraphLessonController` works
   unchanged when a designer rewires it from the legacy
   `DesktopLeverInteractable`.
+- **Ship Hull (exterior)** - Handysize bulk carrier (LOA 120 m, beam 20 m,
+  draft 7 m, Cb 0.82, ~3,000 verts). No script: a static prop instanced
+  under `Ship/ShipHullExterior`. The bundled `ocean_plane` child is
+  disabled because the project ships its own marine water shader.
+  Identity rotation - the v3.3 FBX exports already in Y-up, unlike the
+  Blender Z-up models for compass / EOT.
+  Aligned so its `anchor_bridge_cabin` empty sits exactly on
+  `Ship/Bridge_Structure` (world `(0, 10.23, -28)`) - placeholder station
+  geometry remains until Phase 4 polish hides it.
 
 ## Roadmap
 
