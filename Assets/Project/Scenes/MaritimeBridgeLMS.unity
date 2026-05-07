@@ -9539,10 +9539,10 @@ MonoBehaviour:
   materialOverride: {fileID: 2100000, guid: 980960ac42f3d3243bb71060ba107229, type: 2}
   forceRendererSetup: 1
   renderLayerName: Default
-  openPoseClip: {fileID: 7400000, guid: 23cfef4b8fdd05540a15dd4f6ca8eb37, type: 2}
+  openPoseClip: {fileID: 7400000, guid: c88308f4165b135409d2de7a4d007569, type: 2}
   closedPoseClip: {fileID: 7400000, guid: 3e5d3df133110be438b6678d344f84d0, type: 2}
   bonePrefix: b_r_
-  openPoseSampleTime: 4.3333335
+  openPoseSampleTime: 0
   closedPoseSampleTime: 2.815
   poseFollowSpeed: 28
   disableLegacyGhostAnimation: 1
