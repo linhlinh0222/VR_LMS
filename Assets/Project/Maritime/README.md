@@ -57,11 +57,20 @@ float           IHeadingProvider  <---  CameraHeadingProvider
 - `MagneticCompass` - liquid-damped binnacle. Reads `IHeadingProvider`,
   drives `compass_card_pivot` on local Z. Reference:
   `_staging/model_lms/03_Magnetic_Compass/README.md`.
+- `EngineOrderTelegraph` - 7-detent EOT (-90 to +90 in 30° steps) with
+  ordered/answered pointers and configurable engine acknowledgement delay.
+  Pivots auto-discovered by FBX name (`handle_lever_pivot`,
+  `pointer_ordered_pivot`, `pointer_answered_pivot`). Exposes
+  `NormalizedValue` so existing `MaritimeTelegraphLessonController` works
+  unchanged when a designer rewires it from the legacy
+  `DesktopLeverInteractable`.
 
 ## Roadmap
 
-- Telegraph (EOT) - already partially implemented as `DesktopLeverInteractable`;
-  swap to `EngineOrderTelegraph` with discrete detents (-90, -60, -30, 0, +30, +60, +90).
+- Hook `EngineOrderTelegraph` to a desktop/XR grab driver so the lever can be
+  user-controlled (today it's programmatic only via `SetOrder`).
+- Replace the legacy `MarineTelegraph` placeholder with the new EOT once
+  interaction is wired; rewire `MaritimeTelegraphLessonController.telegraph`.
 - Helm wheel - `IRudderInput` port, integrate steering rate to feed
   `HeadingFromRudderProvider` (replaces `CameraHeadingProvider` in Phase 2).
 - Radar, ECDIS, AIS - share a `BridgeInstrumentDisplay` panel base when 3+
