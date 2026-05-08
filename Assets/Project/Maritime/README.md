@@ -90,9 +90,19 @@ float           IHeadingProvider  <---  CameraHeadingProvider
   `SetRangeIndex`/`EnterStandby`/`EnterTransmit`. Reads `IHeadingProvider`
   (auto-discovered) so heading line stays correct when ship turns.
   UnityEvents: `RangeChanged(float)`, `TransmitStateChanged(bool)`.
-  First display device — when ECDIS and AIS land, common state
-  (range knob, brightness, standby) extracts to `BridgeInstrumentDisplay`
-  base per YAGNI rule (extract on 3rd, not before).
+- **ECDIS** (Electronic Chart Display) - chart display mandated by
+  SOLAS V/19.2.10 (~450 verts, body 620×380×80mm). Z-up Blender — needs
+  (-90, 0, 0) on instance. `ElectronicChartDisplay` MonoBehaviour
+  manages zoom level (8 steps from 50m to 10km half-height), active
+  chart layer enum (Standard / Targets / Route / Alarms), power state.
+  Public API: `ZoomIn`/`ZoomOut`/`SetZoomIndex`/`SetLayer`/`PowerOn`/
+  `PowerOff`. UnityEvents: `ZoomChanged(float)`, `LayerChanged(layer)`,
+  `PowerStateChanged(bool)`. Actual chart rendering (S-57 ENC data,
+  ship marker, route waypoints via RenderTexture + top-down camera) is
+  deferred to a follow-up phase.
+  Two display devices land — when AIS arrives as the 3rd, extract
+  shared power-state surface into `BridgeInstrumentDisplay` base per
+  YAGNI rule.
 
 ## Phase 5 wiring (must be done in Unity Editor; MCP automation pending)
 
