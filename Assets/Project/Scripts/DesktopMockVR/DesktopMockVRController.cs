@@ -80,6 +80,25 @@ public sealed class DesktopMockVRController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float trainingLeverGrabGrip = 0.42f;
     [SerializeField] private float trainingBothHandSpread = -0.16f;
 
+    [Header("Modifier-Capture (Unity XR Interaction Simulator)")]
+    [Tooltip("Hold to manipulate the RIGHT hand with the mouse. Default T per Unity XR Interaction Simulator.")]
+    [SerializeField] private KeyCode rightHandManipulatorKey = KeyCode.T;
+    [Tooltip("Hold to manipulate the LEFT hand with the mouse. Default Y.")]
+    [SerializeField] private KeyCode leftHandManipulatorKey = KeyCode.Y;
+    [Tooltip("Mouse delta -> hand local-translation (m per pixel-equivalent). Lower = finer aim.")]
+    [SerializeField] private float manipulatorSensitivity = 0.0035f;
+    [Tooltip("Mouse-wheel delta -> hand depth (camera-forward). Active only while a modifier is held and not currently holding an object.")]
+    [SerializeField] private float manipulatorDepthSensitivity = 0.08f;
+    [SerializeField] private Vector3 manipulatorMinLocal = new Vector3(-0.85f, -0.70f, 0.30f);
+    [SerializeField] private Vector3 manipulatorMaxLocal = new Vector3(0.85f, 0.50f, 1.50f);
+
+    [Header("Auto-Snap (gravity-glove)")]
+    [Tooltip("Hand magnetically snaps toward any interactable within this radius (world meters).")]
+    [SerializeField] private float autoSnapRadius = 0.35f;
+    [Tooltip("How strongly the hand is pulled toward the snap target each frame. 0 = off, 1 = locks to target.")]
+    [SerializeField, Range(0f, 1f)] private float autoSnapStrength = 0.55f;
+    [SerializeField] private LayerMask autoSnapLayers = ~0;
+
     [Header("Body Proxy")]
     [SerializeField] private Vector3 leftShoulderLocalPosition = new Vector3(-0.22f, -0.32f, 0.04f);
     [SerializeField] private Vector3 rightShoulderLocalPosition = new Vector3(0.22f, -0.32f, 0.04f);
@@ -119,12 +138,18 @@ public sealed class DesktopMockVRController : MonoBehaviour
     private bool _rightHandHoveringInteractable;
     private bool _leftHandHoveringLever;
     private bool _rightHandHoveringLever;
+    private bool _rightManipulatorActive;
+    private bool _leftManipulatorActive;
+    private Vector3 _leftManipulatorLocalTarget;
+    private Vector3 _rightManipulatorLocalTarget;
     private readonly RaycastHit[] _handCastHits = new RaycastHit[16];
     private readonly RaycastHit[] _interactionRayHits = new RaycastHit[32];
+    private readonly Collider[] _autoSnapColliders = new Collider[16];
     private Renderer[] _leftHandRenderers = System.Array.Empty<Renderer>();
     private Renderer[] _rightHandRenderers = System.Array.Empty<Renderer>();
 
     private bool IsHolding => _heldBody != null || _heldLever != null;
+    private bool IsManipulatorActive => _rightManipulatorActive || _leftManipulatorActive;
 
     private void Awake()
     {
@@ -132,6 +157,8 @@ public sealed class DesktopMockVRController : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         ConfigureCharacterController();
         _activeHand = defaultActiveHand;
+        _leftManipulatorLocalTarget = leftHandIdleLocalPosition;
+        _rightManipulatorLocalTarget = rightHandIdleLocalPosition;
         EnsureHandAttachPoints();
         EnsureHandVisuals();
 
@@ -148,7 +175,7 @@ public sealed class DesktopMockVRController : MonoBehaviour
 
     private void Update()
     {
-        UpdateActiveHandSelection();
+        UpdateControlMode();
         UpdateLook();
         UpdateMove();
         UpdateGrabInput();
@@ -228,31 +255,68 @@ public sealed class DesktopMockVRController : MonoBehaviour
         controller.enableOverlapRecovery = true;
     }
 
-    private void UpdateActiveHandSelection()
+    private void UpdateControlMode()
     {
-        if (IsHolding)
+        // Modifier-Capture pattern (Unity XR Interaction Simulator 3.x):
+        // hold T -> mouse drives RIGHT controller, hold Y -> LEFT,
+        // hold both -> both controllers, release -> mouse drives head.
+        // Mouse delta accumulates into a per-hand camera-local target so the
+        // hand keeps its last pose between modifier holds (XR Sim convention).
+        bool wasHolding = IsHolding;
+        _rightManipulatorActive = Input.GetKey(rightHandManipulatorKey);
+        _leftManipulatorActive = Input.GetKey(leftHandManipulatorKey);
+
+        if (!wasHolding)
+        {
+            if (_rightManipulatorActive && _leftManipulatorActive)
+            {
+                _activeHand = DesktopHandSide.Both;
+            }
+            else if (_rightManipulatorActive)
+            {
+                _activeHand = DesktopHandSide.Right;
+            }
+            else if (_leftManipulatorActive)
+            {
+                _activeHand = DesktopHandSide.Left;
+            }
+            else
+            {
+                // Fallback explicit selection (Alpha + Keypad — Vietnamese IME
+                // may eat top-row 2/3 diacritics, so accept numpad too).
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) _activeHand = DesktopHandSide.Right;
+                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) _activeHand = DesktopHandSide.Left;
+                else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) _activeHand = DesktopHandSide.Both;
+            }
+        }
+
+        if (!IsManipulatorActive)
         {
             return;
         }
 
-        // Alpha (top row) AND Keypad (numpad) variants — Vietnamese IME may eat top-row 2/3 (huyền/hỏi diacritics).
-        // Keys 1↔2 are mapped inverse-to-transform-name because leftHand/rightHand idle positions were swapped:
-        // key 1 (user's "tay 1", on left side of view) drives Right transform; key 2 drives Left transform.
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+        float dx = Input.GetAxisRaw("Mouse X") * manipulatorSensitivity;
+        float dy = Input.GetAxisRaw("Mouse Y") * manipulatorSensitivity;
+        // Scroll-wheel only drives manipulator depth when not currently holding —
+        // while holding, scroll keeps its existing role of adjusting hold distance.
+        float dz = !wasHolding ? Input.mouseScrollDelta.y * manipulatorDepthSensitivity : 0f;
+        Vector3 delta = new Vector3(dx, dy, dz);
+
+        if (_rightManipulatorActive)
         {
-            _activeHand = DesktopHandSide.Right;
+            _rightManipulatorLocalTarget = ClampManipulator(_rightManipulatorLocalTarget + delta);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        if (_leftManipulatorActive)
         {
-            _activeHand = DesktopHandSide.Left;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
-        {
-            _activeHand = DesktopHandSide.Both;
+            _leftManipulatorLocalTarget = ClampManipulator(_leftManipulatorLocalTarget + delta);
         }
     }
+
+    private Vector3 ClampManipulator(Vector3 v) => new Vector3(
+        Mathf.Clamp(v.x, manipulatorMinLocal.x, manipulatorMaxLocal.x),
+        Mathf.Clamp(v.y, manipulatorMinLocal.y, manipulatorMaxLocal.y),
+        Mathf.Clamp(v.z, manipulatorMinLocal.z, manipulatorMaxLocal.z));
 
     [Header("Professional Simulation")]
     [SerializeField] private bool enableSmoothing = true;
@@ -300,22 +364,29 @@ public sealed class DesktopMockVRController : MonoBehaviour
             return;
         }
 
-        _targetYaw += Input.GetAxisRaw("Mouse X") * lookSensitivity;
-        _targetPitch -= Input.GetAxisRaw("Mouse Y") * lookSensitivity;
-        _targetPitch = Mathf.Clamp(_targetPitch, -80f, 80f);
-
-        if (enableSmoothing)
+        // Camera (head) rotation pauses while a hand-manipulator key is held
+        // so mouse delta drives the controller instead — matches Unity XR
+        // Interaction Simulator + Meta XR Simulator desktop conventions.
+        if (!IsManipulatorActive)
         {
-            _yaw = Mathf.LerpAngle(_yaw, _targetYaw, Time.deltaTime * rotationSmoothing);
-            _pitch = Mathf.LerpAngle(_pitch, _targetPitch, Time.deltaTime * rotationSmoothing);
-        }
-        else
-        {
-            _yaw = _targetYaw;
-            _pitch = _targetPitch;
+            _targetYaw += Input.GetAxisRaw("Mouse X") * lookSensitivity;
+            _targetPitch -= Input.GetAxisRaw("Mouse Y") * lookSensitivity;
+            _targetPitch = Mathf.Clamp(_targetPitch, -80f, 80f);
+
+            if (enableSmoothing)
+            {
+                _yaw = Mathf.LerpAngle(_yaw, _targetYaw, Time.deltaTime * rotationSmoothing);
+                _pitch = Mathf.LerpAngle(_pitch, _targetPitch, Time.deltaTime * rotationSmoothing);
+            }
+            else
+            {
+                _yaw = _targetYaw;
+                _pitch = _targetPitch;
+            }
+
+            transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
         }
 
-        transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
         HandleProfessionalInputs();
     }
 
@@ -629,13 +700,22 @@ public sealed class DesktopMockVRController : MonoBehaviour
             return;
         }
 
-        Vector3 targetPosition = GetTrainingGhostHandTargetPosition();
-        if (IsHandSelected(leftHandRoot))
+        // Hands only leave idle while their modifier is held (XR Sim model)
+        // or while attached to a held body. This avoids the "stuck at center
+        // forward" artifact that the cursor-locked aim-ray used to produce.
+        bool leftActive = _leftManipulatorActive
+            || (IsHolding && _heldHandRoot == leftHandRoot)
+            || (_activeHand == DesktopHandSide.Both && IsHolding);
+        bool rightActive = _rightManipulatorActive
+            || (IsHolding && _heldHandRoot == rightHandRoot)
+            || (_activeHand == DesktopHandSide.Both && IsHolding);
+
+        if (leftActive)
         {
             MoveHandAttachToWorldPosition(
                 leftHandRoot,
                 GetAttachPoint(leftHandRoot),
-                GetTrainingGhostHandTargetForSide(targetPosition, leftHand: true),
+                GetTrainingGhostHandTargetForSide(leftHand: true),
                 Time.deltaTime);
         }
         else
@@ -643,12 +723,12 @@ public sealed class DesktopMockVRController : MonoBehaviour
             MoveHandToLocalPosition(leftHandRoot, leftHandIdleLocalPosition, Time.deltaTime);
         }
 
-        if (IsHandSelected(rightHandRoot))
+        if (rightActive)
         {
             MoveHandAttachToWorldPosition(
                 rightHandRoot,
                 GetAttachPoint(rightHandRoot),
-                GetTrainingGhostHandTargetForSide(targetPosition, leftHand: false),
+                GetTrainingGhostHandTargetForSide(leftHand: false),
                 Time.deltaTime);
         }
         else
@@ -719,31 +799,95 @@ public sealed class DesktopMockVRController : MonoBehaviour
         }
     }
 
-    private Vector3 GetTrainingGhostHandTargetPosition()
+    private Vector3 GetTrainingGhostHandTargetForSide(bool leftHand)
     {
+        // While holding a body/lever: follow the held attach target (kept up
+        // to date by FollowHeldBody / lever update). Both-hands mode applies
+        // the existing sideways spread so the off-hand sits beside the grab.
         if (IsHolding && _hasHeldHandAttachTarget)
         {
-            return _heldHandAttachTargetPosition;
+            Vector3 heldTarget = _heldHandAttachTargetPosition;
+            if (_activeHand == DesktopHandSide.Both)
+            {
+                float side = leftHand ? -1f : 1f;
+                heldTarget += transform.right * trainingBothHandSpread * side;
+            }
+            return heldTarget;
         }
 
-        Ray ray = GetAimRay();
-        if (TryRaycastSelectable(ray, out RaycastHit hit))
+        // Free hand: manipulator local target -> world. Auto-snap pulls
+        // toward any nearby interactable (Half-Life Alyx gravity-glove feel).
+        Vector3 localTarget = leftHand ? _leftManipulatorLocalTarget : _rightManipulatorLocalTarget;
+        Vector3 worldTarget = transform.TransformPoint(localTarget);
+
+        if (TryFindAutoSnapTarget(worldTarget, out Vector3 snapPoint))
         {
-            return GetSurfaceAnchorPosition(hit, surfaceGrabOffset);
+            worldTarget = Vector3.Lerp(worldTarget, snapPoint, autoSnapStrength);
         }
 
-        return ray.origin + ray.direction * activeHandDefaultDistance;
+        if (_activeHand == DesktopHandSide.Both)
+        {
+            float side = leftHand ? -1f : 1f;
+            worldTarget += transform.right * trainingBothHandSpread * side;
+        }
+
+        return worldTarget;
     }
 
-    private Vector3 GetTrainingGhostHandTargetForSide(Vector3 targetPosition, bool leftHand)
+    private bool TryFindAutoSnapTarget(Vector3 worldPosition, out Vector3 snapPoint)
     {
-        if (_activeHand != DesktopHandSide.Both)
+        snapPoint = worldPosition;
+        if (autoSnapStrength <= 0f || autoSnapRadius <= 0f) return false;
+
+        int count = Physics.OverlapSphereNonAlloc(
+            worldPosition,
+            autoSnapRadius,
+            _autoSnapColliders,
+            autoSnapLayers,
+            QueryTriggerInteraction.Ignore);
+
+        Collider best = null;
+        float bestDistSq = float.PositiveInfinity;
+        Vector3 bestPoint = worldPosition;
+
+        for (int i = 0; i < count; i++)
         {
-            return targetPosition;
+            Collider c = _autoSnapColliders[i];
+            if (c == null || !IsAutoSnapCandidate(c)) continue;
+            Vector3 closest = c.ClosestPoint(worldPosition);
+            float distSq = (worldPosition - closest).sqrMagnitude;
+            if (distSq < bestDistSq)
+            {
+                bestDistSq = distSq;
+                best = c;
+                bestPoint = closest;
+            }
         }
 
-        float side = leftHand ? -1f : 1f;
-        return targetPosition + transform.right * trainingBothHandSpread * side;
+        if (best == null) return false;
+
+        Vector3 outward = worldPosition - bestPoint;
+        if (outward.sqrMagnitude < 0.0001f) outward = -transform.forward;
+        snapPoint = bestPoint + outward.normalized * surfaceGrabOffset;
+        return true;
+    }
+
+    private bool IsAutoSnapCandidate(Collider c)
+    {
+        DesktopLeverInteractable lever = c.GetComponentInParent<DesktopLeverInteractable>();
+        if (lever != null)
+        {
+            // Don't snap onto the lever we're already holding.
+            return _heldLever == null || lever != _heldLever;
+        }
+
+        if (c.attachedRigidbody != null)
+        {
+            if (_heldBody != null && c.attachedRigidbody == _heldBody) return false;
+            return IsLayerInMask(c.gameObject.layer, grabbableLayers);
+        }
+
+        return false;
     }
 
     private void UpdateFreeActiveHand()
@@ -967,6 +1111,24 @@ public sealed class DesktopMockVRController : MonoBehaviour
 
     private Ray GetAimRay()
     {
+        // While a hand-manipulator key is held, the aim ray points from the
+        // camera through the active hand's manipulator world position. This
+        // means grab/hover/held-body code automatically follows the hand
+        // without needing per-call branches — matches the XR Sim's "selected
+        // controller is the aim source" model.
+        if (IsManipulatorActive)
+        {
+            Transform handRoot = GetActiveHandRoot();
+            Vector3 local = handRoot == leftHandRoot
+                ? _leftManipulatorLocalTarget
+                : _rightManipulatorLocalTarget;
+            Vector3 handWorld = transform.TransformPoint(local);
+            Vector3 origin = transform.position;
+            Vector3 direction = handWorld - origin;
+            if (direction.sqrMagnitude < 0.0001f) direction = transform.forward;
+            return new Ray(origin, direction.normalized);
+        }
+
         Vector3 screenPoint = Cursor.lockState == CursorLockMode.Locked
             ? new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f)
             : GetClampedMouseScreenPoint();

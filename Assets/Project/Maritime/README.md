@@ -166,13 +166,40 @@ MagneticCompass`.
 - Radar, ECDIS, AIS - share a `BridgeInstrumentDisplay` panel base when 3+
   display devices land (extract base then per YAGNI, not before).
 
+## Desktop controls (Modifier-Capture pattern, Phase 11)
+
+Controls follow Unity XR Interaction Simulator 3.x conventions so the desktop
+mock matches what the cadet will encounter when they jump to a real headset.
+
+| Action | Default key | Notes |
+|---|---|---|
+| Look (head/HMD) | Mouse move | Cursor locked. ESC to release for menus, click in viewport to re-lock. |
+| Walk | W / A / S / D | LeftShift sprints. |
+| Vertical body translation | Space (up) / LeftCtrl (down) | XR Device Simulator convention. |
+| **Manipulate RIGHT hand** | **Hold T** | Mouse delta drives right-hand position (camera-local). Camera freezes while held. |
+| **Manipulate LEFT hand** | **Hold Y** | Same as T but for left hand. |
+| Manipulate both hands | Hold T + Y | Both controllers move together. |
+| Hand depth (forward/back) | Mouse wheel while T or Y held | Only when not currently grabbing — scroll keeps its hold-distance role during a grab. |
+| Grab / release | LMB hold / release | Grabs whatever the active hand is on (auto-snap helps). |
+| Explicit hand selection (fallback) | 1 = right, 2 = left, 3 = both | Persistent until next press; modifier keys override while held. |
+
+**Auto-snap (gravity-glove)**: Once the hand is within ~0.35 m of an
+interactable, it magnetically pulls toward the surface (Half-Life Alyx
+gravity-glove inspiration). Strength is configurable on
+`DesktopMockVRController` (`Auto-Snap` section).
+
 ## Test strategy
 
 Until headless tests are set up, verify in Play Mode:
 
 1. Open `Assets/Project/Scenes/MaritimeBridgeLMS.unity`.
-2. Press Play. Right-click drag to look around.
-3. Compass card should rotate smoothly opposite to the camera yaw and settle
+2. Press Play. Mouse to look, WASD to walk.
+3. Hold **T**, move mouse — right hand should glide through 3D space and
+   snap toward the telegraph / wheel / radar when within ~35 cm.
+4. With right hand on the telegraph lever, click & hold LMB to grab,
+   keep T held while moving the mouse to swing the lever, release LMB to
+   let go.
+5. Compass card should rotate smoothly opposite to the camera yaw and settle
    within ~1 second per `swingDamping`.
-4. `MagneticCompass.HeadingDegrees` and `MagneticCompass.CardinalDirection`
+6. `MagneticCompass.HeadingDegrees` and `MagneticCompass.CardinalDirection`
    should match the camera Y rotation.
