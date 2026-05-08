@@ -733,6 +733,7 @@ Transform:
   - {fileID: 1219298573}
   - {fileID: 544845583}
   - {fileID: 1057904055}
+  - {fileID: 723900465}
   m_Father: {fileID: 705187155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &41450107
@@ -6140,6 +6141,107 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1413570815}
   m_LocalEulerAnglesHint: {x: 5.0307784, y: 97.072975, z: -4.4457746}
+--- !u!1001 &723900464
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 39891744}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.3200006
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.976296
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.21643962
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      propertyPath: m_Name
+      value: MarineRadar
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 723900467}
+  m_SourcePrefab: {fileID: 100100000, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+--- !u!4 &723900465 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+  m_PrefabInstance: {fileID: 723900464}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &723900466 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 8626b95d8c4692246843a987d14ec582, type: 3}
+  m_PrefabInstance: {fileID: 723900464}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &723900467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723900466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da128146c8b1de459fbd73090c665f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ComprehensiveDemoRuntime::MaritimeLMS.Radar.MarineRadar
+  sweepPivot: {fileID: 0}
+  headingProviderBehaviour: {fileID: 0}
+  rpm: 30
+  sweepClockwise: 1
+  rangesNm:
+  - 0.5
+  - 1.5
+  - 3
+  - 6
+  - 12
+  - 24
+  initialRangeIndex: 3
+  startTransmitting: 1
+  RangeChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  TransmitStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &736081121
 GameObject:
   m_ObjectHideFlags: 0

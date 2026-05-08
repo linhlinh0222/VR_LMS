@@ -82,6 +82,17 @@ float           IHeadingProvider  <---  CameraHeadingProvider
   Public events `RudderChanged(float)`, `HardPort`, `HardStarboard`,
   `Midships` are SerializedField-wired so designers can attach lesson
   hooks (alarm sound, scoring, etc.) without code.
+- **Marine Radar** - X-band PPI display (~700 verts, body 380×420×150mm,
+  PPI 300mm round). `MarineRadar` MonoBehaviour rotates the FBX
+  `sweep_pivot` empty around local Y at the configured RPM (default 30,
+  matches typical X-band antenna). Range scale follows IMO/IEC 62388
+  (0.5 / 1.5 / 3 / 6 / 12 / 24 nm). Public API: `RangeUp`/`RangeDown`/
+  `SetRangeIndex`/`EnterStandby`/`EnterTransmit`. Reads `IHeadingProvider`
+  (auto-discovered) so heading line stays correct when ship turns.
+  UnityEvents: `RangeChanged(float)`, `TransmitStateChanged(bool)`.
+  First display device — when ECDIS and AIS land, common state
+  (range knob, brightness, standby) extracts to `BridgeInstrumentDisplay`
+  base per YAGNI rule (extract on 3rd, not before).
 
 ## Phase 5 wiring (must be done in Unity Editor; MCP automation pending)
 
