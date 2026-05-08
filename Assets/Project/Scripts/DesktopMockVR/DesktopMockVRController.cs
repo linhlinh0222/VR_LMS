@@ -78,6 +78,8 @@ public sealed class DesktopMockVRController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float trainingHoverGrip = 0.08f;
     [SerializeField, Range(0f, 1f)] private float trainingBodyGrabGrip = 0.25f;
     [SerializeField, Range(0f, 1f)] private float trainingLeverGrabGrip = 0.42f;
+    [Tooltip("Subtle 'ready' grip applied to the currently selected hand (via 1/2/3 or modifier hold) so the user can see which hand is active without moving its position.")]
+    [SerializeField, Range(0f, 1f)] private float activeHandReadyGrip = 0.10f;
     [SerializeField] private float trainingBothHandSpread = -0.16f;
 
     [Header("Modifier-Capture (Unity XR Interaction Simulator)")]
@@ -157,8 +159,8 @@ public sealed class DesktopMockVRController : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         ConfigureCharacterController();
         _activeHand = defaultActiveHand;
-        _leftManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: true);
-        _rightManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: false);
+        _leftManipulatorLocalTarget = leftHandIdleLocalPosition;
+        _rightManipulatorLocalTarget = rightHandIdleLocalPosition;
         EnsureHandAttachPoints();
         EnsureHandVisuals();
 
@@ -282,27 +284,14 @@ public sealed class DesktopMockVRController : MonoBehaviour
             }
             else
             {
-                // Fallback explicit selection (Alpha + Keypad — Vietnamese IME
-                // may eat top-row 2/3 diacritics, so accept numpad too).
-                // On press, reset the newly-selected hand's manipulator target
-                // to a fresh front-center pose so the user sees a clear "this
-                // hand is now active" visual switch.
-                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
-                {
-                    _activeHand = DesktopHandSide.Right;
-                    _rightManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: false);
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
-                {
-                    _activeHand = DesktopHandSide.Left;
-                    _leftManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: true);
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
-                {
-                    _activeHand = DesktopHandSide.Both;
-                    _leftManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: true);
-                    _rightManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: false);
-                }
+                // Explicit selection (Alpha + Keypad — Vietnamese IME may eat
+                // top-row 2/3 diacritics, so accept numpad too). Hands stay
+                // at their natural idle positions; visual feedback for the
+                // active hand comes from a subtle grip "ready" pose, not by
+                // moving the hand into the camera's view.
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) _activeHand = DesktopHandSide.Right;
+                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) _activeHand = DesktopHandSide.Left;
+                else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) _activeHand = DesktopHandSide.Both;
             }
         }
 
@@ -333,14 +322,6 @@ public sealed class DesktopMockVRController : MonoBehaviour
         Mathf.Clamp(v.x, manipulatorMinLocal.x, manipulatorMaxLocal.x),
         Mathf.Clamp(v.y, manipulatorMinLocal.y, manipulatorMaxLocal.y),
         Mathf.Clamp(v.z, manipulatorMinLocal.z, manipulatorMaxLocal.z));
-
-    // Camera-local "ready to interact" pose used when a hand is selected via
-    // 1/2/3. Sits roughly at activeHandDefaultDistance in front, slightly to
-    // the hand's own side so left+right don't overlap in Both mode.
-    private Vector3 GetSelectedFreshLocal(bool leftHand) => ClampManipulator(new Vector3(
-        leftHand ? -0.05f : 0.05f,
-        -0.10f,
-        activeHandDefaultDistance));
 
     [Header("Professional Simulation")]
     [SerializeField] private bool enableSmoothing = true;
@@ -724,23 +705,14 @@ public sealed class DesktopMockVRController : MonoBehaviour
             return;
         }
 
-        // A hand is "active" (visible at its manipulator target) when:
-        //   1. Its modifier key is held (T or Y) -> mouse-driven, or
-        //   2. It is the currently selected hand (1/2/3 fallback) -> sits at
-        //      its last manipulator target, refreshed on selection so the user
-        //      sees a clear visual switch, or
-        //   3. It is attached to a held body / lever.
-        // Otherwise the hand returns to its idle local position.
-        bool leftSelected = _activeHand == DesktopHandSide.Left
-            || _activeHand == DesktopHandSide.Both;
-        bool rightSelected = _activeHand == DesktopHandSide.Right
-            || _activeHand == DesktopHandSide.Both;
-
+        // A hand only leaves its natural idle pose when its modifier (T/Y) is
+        // held or it is attached to a held body. Selecting via 1/2/3 only
+        // changes which hand handles LMB grab; the visible switch is shown
+        // through the active-hand "ready" grip in UpdateHandGripVisuals so
+        // the hands do not crowd the camera view.
         bool leftActive = _leftManipulatorActive
-            || leftSelected
             || (IsHolding && _heldHandRoot == leftHandRoot);
         bool rightActive = _rightManipulatorActive
-            || rightSelected
             || (IsHolding && _heldHandRoot == rightHandRoot);
 
         if (leftActive)
@@ -1581,6 +1553,17 @@ public sealed class DesktopMockVRController : MonoBehaviour
                     ? trainingHoverGrip
                     : (_rightHandHoveringLever ? leverHoverGrip : bodyHoverGrip);
             }
+        }
+
+        // Active-hand "ready" grip: when not holding/hovering, the selected
+        // hand closes slightly so the user can tell which side is currently
+        // wired to LMB grab — without dragging the hand into the camera view.
+        if (!IsHolding)
+        {
+            bool leftSelected = _activeHand == DesktopHandSide.Left || _activeHand == DesktopHandSide.Both;
+            bool rightSelected = _activeHand == DesktopHandSide.Right || _activeHand == DesktopHandSide.Both;
+            if (leftSelected) leftGrip = Mathf.Max(leftGrip, activeHandReadyGrip);
+            if (rightSelected) rightGrip = Mathf.Max(rightGrip, activeHandReadyGrip);
         }
 
         if (leftHandVisual != null)

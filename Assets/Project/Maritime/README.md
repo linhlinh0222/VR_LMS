@@ -176,10 +176,10 @@ mock matches what the cadet will encounter when they jump to a real headset.
 | Look (head/HMD) | Mouse move | Cursor locked. ESC to release for menus, click in viewport to re-lock. |
 | Walk | W / A / S / D | LeftShift sprints. |
 | Vertical body translation | Space (up) / LeftCtrl (down) | XR Device Simulator convention. |
-| **Switch active hand** | **1 = right, 2 = left, 3 = both** | Selected hand snaps to a fresh "ready" pose in front of the camera; the other hand returns to idle. Visible feedback on every press. |
-| **Fine-control RIGHT hand** | **Hold T** | Mouse delta drives right-hand position (camera-local). Camera freezes while held. Position persists when released. |
-| **Fine-control LEFT hand** | **Hold Y** | Same as T but for left hand. |
-| Fine-control both hands | Hold T + Y | Both controllers move together. |
+| **Switch active hand** | **1 = right, 2 = left, 3 = both** | Selected hand closes slightly into a "ready" grip (subtle visual cue). Hands stay at their natural idle positions so they don't block the view. |
+| **Move RIGHT hand with mouse** | **Hold T** | Camera freezes; mouse delta drives the right hand in 3D space. Position persists when released. |
+| **Move LEFT hand with mouse** | **Hold Y** | Same as T but for left hand. |
+| Move both hands together | Hold T + Y | Both controllers move with the mouse. |
 | Hand depth (forward/back) | Mouse wheel while T or Y held | Only when not currently grabbing — scroll keeps its hold-distance role during a grab. |
 | Grab / release | LMB hold / release | Grabs whatever the active hand is on (auto-snap helps). |
 
