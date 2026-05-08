@@ -73,6 +73,43 @@ float           IHeadingProvider  <---  CameraHeadingProvider
   Aligned so its `anchor_bridge_cabin` empty sits exactly on
   `Ship/Bridge_Structure` (world `(0, 10.23, -28)`) - placeholder station
   geometry remains until Phase 4 polish hides it.
+- **Ship Wheel (helm)** - traditional 8-spoke helm (~3,632 verts,
+  diameter 700 mm, lock-to-lock 720°). `ShipWheel` MonoBehaviour
+  rotates the FBX `wheel_pivot` empty around local Y, exposes
+  `RudderNormalized` ([-1, +1]) via `IRudderInput`. Public
+  `BeginGrab`/`UpdateGrab`/`EndGrab` API matches `DesktopLeverInteractable`
+  so the desktop driver can hook in. Optional spring-back to midships.
+  Public events `RudderChanged(float)`, `HardPort`, `HardStarboard`,
+  `Midships` are SerializedField-wired so designers can attach lesson
+  hooks (alarm sound, scoring, etc.) without code.
+
+## Phase 5 wiring (must be done in Unity Editor; MCP automation pending)
+
+The Phase 5 scripts and the `ShipWheel_v1.0.fbx` ship in this branch but
+the scene was not auto-wired due to a transient MCP cloud auth outage.
+Complete the integration manually in Unity Editor:
+
+1. Drag `Assets/Project/Maritime/Models/Helm/ShipWheel_v1.0.fbx` into the
+   scene under `Ship/Bridge_Structure/Maritime Training Station/`.
+2. Rename the instance to `ShipWheel`. Set the transform to:
+   - position `(0, 10.25, -23.0)` (port-of-compass, on the bridge deck)
+   - rotation `(-90, 0, 0)` (Z-up Blender → Y-up Unity)
+   - scale `1`.
+3. Add component **Maritime LMS / Ship Wheel** to the instance.
+   In the inspector set `Wheel Pivot` to the child
+   `ShipWheel_root/Wheel/wheel_pivot`. Leave detents and spring-back
+   defaults unless the lesson dictates otherwise.
+4. Create an empty GameObject `HeadingProvider` under
+   `Ship/Bridge_Structure/`. Add component
+   **Maritime LMS / Heading From Rudder Provider**. Drag the new
+   `ShipWheel` into `Rudder Input Behaviour`.
+5. Open the existing `MagneticCompass` GameObject. Replace the
+   `Heading Provider Behaviour` reference (currently the camera-based
+   `CameraHeadingProvider`) with the `HeadingProvider` GameObject.
+
+After step 5 the ports & adapters loop runs end-to-end:
+`ShipWheel → IRudderInput → HeadingFromRudderProvider → IHeadingProvider →
+MagneticCompass`.
 
 ## Roadmap
 
