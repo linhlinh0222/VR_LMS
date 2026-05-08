@@ -4,12 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public sealed class DesktopMockVRController : MonoBehaviour
 {
-    private enum DesktopHandSide
+    public enum DesktopHandSide
     {
         Left,
         Right,
         Both
     }
+
+    /// <summary>Currently active hand selection. Useful for hand-aware lesson scoring.</summary>
+    public DesktopHandSide ActiveHand => _activeHand;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2.5f;
@@ -24,7 +27,9 @@ public sealed class DesktopMockVRController : MonoBehaviour
     [SerializeField] private float bodyStepOffset = 0.18f;
     [SerializeField] private float bodySlopeLimit = 55f;
     [SerializeField] private float groundStickSpeed = 1.25f;
-    [SerializeField] private bool allowVerticalBodyMove;
+    [Tooltip("When true, Space lifts the body and Left Ctrl lowers it (Unity XR Device Simulator convention). " +
+             "Lets the desktop tester move between bridge decks or simulate a different VR user height.")]
+    [SerializeField] private bool allowVerticalBodyMove = true;
 
     [Header("Grab")]
     [SerializeField] private LayerMask grabbableLayers = ~0;
@@ -265,29 +270,32 @@ public sealed class DesktopMockVRController : MonoBehaviour
     private Vector3 _originalHandLocalPosLeft;
     private Vector3 _originalHandLocalPosRight;
 
+    private bool _cursorLockInitialized;
+
     private void UpdateLook()
     {
+        // VR-mock convention (Unity XR Device Simulator + FPS standard):
+        // cursor is locked + hidden by default so mouse drives free 360° look
+        // immediately; ESC unlocks for menus; clicking back into the game view
+        // re-locks. No right-click hold required.
+        if (!_cursorLockInitialized)
+        {
+            LockCursorForLook();
+            _cursorLockInitialized = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            UnlockCursorForMenu();
+        }
+        else if (Cursor.lockState == CursorLockMode.None && Input.GetMouseButtonDown(0))
+        {
+            // Player clicked back into the viewport — re-lock for look.
+            LockCursorForLook();
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (Cursor.lockState != CursorLockMode.Locked)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-
-        if (!Input.GetMouseButton(1))
-        {
-            // Reset zoom and lean when not looking? No, let's keep zoom on separate key or just while RMB
             HandleProfessionalInputs();
             return;
         }
@@ -309,6 +317,18 @@ public sealed class DesktopMockVRController : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
         HandleProfessionalInputs();
+    }
+
+    private static void LockCursorForLook()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private static void UnlockCursorForMenu()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     private void HandleProfessionalInputs()
@@ -350,22 +370,30 @@ public sealed class DesktopMockVRController : MonoBehaviour
         if (Input.GetKey(KeyCode.D)) move += right;
         if (Input.GetKey(KeyCode.A)) move -= right;
 
+        // Vertical translation per Unity XR Device Simulator convention:
+        // Space lifts the body, Left Ctrl lowers. Useful to inspect raised
+        // controls or drop to a lower deck during desktop simulation.
+        float verticalInput = 0f;
+        if (allowVerticalBodyMove)
+        {
+            if (Input.GetKey(KeyCode.Space)) verticalInput += 1f;
+            if (Input.GetKey(KeyCode.LeftControl)) verticalInput -= 1f;
+        }
+
         float speed = moveSpeed;
         if (Input.GetKey(KeyCode.LeftShift)) speed *= sprintMultiplier;
 
-        if (move.sqrMagnitude > 0.01f)
+        if (move.sqrMagnitude > 0.01f || Mathf.Abs(verticalInput) > 0.01f)
         {
             _walkBobTimer += Time.deltaTime * walkBobSpeed;
-            float bobY = Mathf.Sin(_walkBobTimer) * walkBobAmount;
-            // Apply bob locally to camera if needed, or just let CC movement handle it
-            // For maritime, let's keep it subtle
-            Vector3 bodyDelta = move.normalized * speed * Time.deltaTime;
+            Vector3 horizontal = move.sqrMagnitude > 0.01f ? move.normalized : Vector3.zero;
+            Vector3 bodyDelta = (horizontal + Vector3.up * verticalInput) * speed * Time.deltaTime;
             MoveBody(bodyDelta);
         }
         else
         {
             _walkBobTimer = 0;
-            // Apply gravity/stick even when idle
+            // Apply gravity/stick even when idle — only when not flying.
             MoveBody(Vector3.down * groundStickSpeed * Time.deltaTime);
         }
     }

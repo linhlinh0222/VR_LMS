@@ -12207,6 +12207,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6993769946363296637, guid: 343e51da562f28e40bf7ba04084230e7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1368354471}
+    - targetCorrespondingSourceObject: {fileID: 6993769946363296637, guid: 343e51da562f28e40bf7ba04084230e7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1368354472}
   m_SourcePrefab: {fileID: 100100000, guid: 343e51da562f28e40bf7ba04084230e7, type: 3}
 --- !u!4 &1368354467 stripped
 Transform:
@@ -12266,6 +12269,31 @@ MonoBehaviour:
   asternColor: {r: 0.85, g: 0.12, b: 0.08, a: 1}
   stopColor: {r: 1, g: 0.68, b: 0.12, a: 1}
   aheadColor: {r: 0.08, g: 0.75, b: 0.25, a: 1}
+--- !u!114 &1368354472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368354469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea554e3a2da546445b906cae9182441f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ComprehensiveDemoRuntime::MaritimeLMS.Lessons.HandAwareLeverEvaluator
+  lever: {fileID: 0}
+  playerRig: {fileID: 0}
+  correctHand: 1
+  bothHandsTreatedAs: 1
+  CorrectHandUsed:
+    m_PersistentCalls:
+      m_Calls: []
+  WrongHandUsed:
+    m_PersistentCalls:
+      m_Calls: []
+  AnyGrabEvaluated:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1382407599
 GameObject:
   m_ObjectHideFlags: 0
