@@ -732,6 +732,7 @@ Transform:
   - {fileID: 1875713189}
   - {fileID: 1219298573}
   - {fileID: 544845583}
+  - {fileID: 1057904055}
   m_Father: {fileID: 705187155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &41450107
@@ -3527,6 +3528,53 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 389093346}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &391197441
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 391197442}
+  - component: {fileID: 391197443}
+  m_Layer: 0
+  m_Name: HeadingProvider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &391197442
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391197441}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 705187155}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &391197443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391197441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789394b5d438b304480d34449beb8fdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ComprehensiveDemoRuntime::MaritimeLMS.Bridge.HeadingFromRudderProvider
+  rudderInputBehaviour: {fileID: 1057904057}
+  initialHeadingDegrees: 0
+  maxRotationDegPerSec: 5
 --- !u!1 &396727232
 GameObject:
   m_ObjectHideFlags: 0
@@ -5976,6 +6024,7 @@ Transform:
   - {fileID: 127767149}
   - {fileID: 39891744}
   - {fileID: 241354498}
+  - {fileID: 391197442}
   m_Father: {fileID: 915944441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705693557
@@ -8512,6 +8561,112 @@ Transform:
   - {fileID: 304948353}
   m_Father: {fileID: 1368354467}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1057904053
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 39891744}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.020000458
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      propertyPath: m_Name
+      value: ShipWheel
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1057904057}
+  m_SourcePrefab: {fileID: 100100000, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+--- !u!4 &1057904054 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 953932781448420081, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+  m_PrefabInstance: {fileID: 1057904053}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1057904055 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+  m_PrefabInstance: {fileID: 1057904053}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1057904056 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9e3a6113420685e45a9b1e9107baabd0, type: 3}
+  m_PrefabInstance: {fileID: 1057904053}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1057904057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057904056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f55b4379cb38064469ed190ef68c5cb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ComprehensiveDemoRuntime::MaritimeLMS.Helm.ShipWheel
+  wheelPivot: {fileID: 1057904054}
+  maxLockDegrees: 720
+  followSpeed: 18
+  springBackToCenter: 0
+  springSpeed: 90
+  midshipsTolerance: 0.05
+  hardOverThreshold: 0.95
+  RudderChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  HardPort:
+    m_PersistentCalls:
+      m_Calls: []
+  HardStarboard:
+    m_PersistentCalls:
+      m_Calls: []
+  Midships:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1063755416
 GameObject:
   m_ObjectHideFlags: 0
@@ -9051,13 +9206,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1116324470}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.72, y: 1.55, z: 3.66}
-  m_LocalScale: {x: 1.24, y: 0.78, z: 0.02}
+  m_LocalRotation: {x: 0.00057480444, y: -0.013981653, z: 0.041072614, w: 0.9990582}
+  m_LocalPosition: {x: 0.608, y: 1.489, z: 3.657}
+  m_LocalScale: {x: 1.344532, y: 0.78, z: 0.02}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 241354498}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0.132, y: -1.598, z: 4.707}
 --- !u!23 &1116324472
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10631,7 +10786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ComprehensiveDemoRuntime::MaritimeLMS.Compass.MagneticCompass
   cardPivot: {fileID: 1219298574}
-  headingProviderBehaviour: {fileID: 0}
+  headingProviderBehaviour: {fileID: 391197443}
   swingDamping: 5
   wobbleAmplitudeDegrees: 1
   wobbleFrequencyHz: 0.5
