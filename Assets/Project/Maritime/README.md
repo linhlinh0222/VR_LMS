@@ -176,12 +176,12 @@ mock matches what the cadet will encounter when they jump to a real headset.
 | Look (head/HMD) | Mouse move | Cursor locked. ESC to release for menus, click in viewport to re-lock. |
 | Walk | W / A / S / D | LeftShift sprints. |
 | Vertical body translation | Space (up) / LeftCtrl (down) | XR Device Simulator convention. |
-| **Manipulate RIGHT hand** | **Hold T** | Mouse delta drives right-hand position (camera-local). Camera freezes while held. |
-| **Manipulate LEFT hand** | **Hold Y** | Same as T but for left hand. |
-| Manipulate both hands | Hold T + Y | Both controllers move together. |
+| **Switch active hand** | **1 = right, 2 = left, 3 = both** | Selected hand snaps to a fresh "ready" pose in front of the camera; the other hand returns to idle. Visible feedback on every press. |
+| **Fine-control RIGHT hand** | **Hold T** | Mouse delta drives right-hand position (camera-local). Camera freezes while held. Position persists when released. |
+| **Fine-control LEFT hand** | **Hold Y** | Same as T but for left hand. |
+| Fine-control both hands | Hold T + Y | Both controllers move together. |
 | Hand depth (forward/back) | Mouse wheel while T or Y held | Only when not currently grabbing — scroll keeps its hold-distance role during a grab. |
 | Grab / release | LMB hold / release | Grabs whatever the active hand is on (auto-snap helps). |
-| Explicit hand selection (fallback) | 1 = right, 2 = left, 3 = both | Persistent until next press; modifier keys override while held. |
 
 **Auto-snap (gravity-glove)**: Once the hand is within ~0.35 m of an
 interactable, it magnetically pulls toward the surface (Half-Life Alyx

@@ -157,8 +157,8 @@ public sealed class DesktopMockVRController : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         ConfigureCharacterController();
         _activeHand = defaultActiveHand;
-        _leftManipulatorLocalTarget = leftHandIdleLocalPosition;
-        _rightManipulatorLocalTarget = rightHandIdleLocalPosition;
+        _leftManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: true);
+        _rightManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: false);
         EnsureHandAttachPoints();
         EnsureHandVisuals();
 
@@ -284,9 +284,25 @@ public sealed class DesktopMockVRController : MonoBehaviour
             {
                 // Fallback explicit selection (Alpha + Keypad — Vietnamese IME
                 // may eat top-row 2/3 diacritics, so accept numpad too).
-                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) _activeHand = DesktopHandSide.Right;
-                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) _activeHand = DesktopHandSide.Left;
-                else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) _activeHand = DesktopHandSide.Both;
+                // On press, reset the newly-selected hand's manipulator target
+                // to a fresh front-center pose so the user sees a clear "this
+                // hand is now active" visual switch.
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+                {
+                    _activeHand = DesktopHandSide.Right;
+                    _rightManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: false);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+                {
+                    _activeHand = DesktopHandSide.Left;
+                    _leftManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: true);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
+                {
+                    _activeHand = DesktopHandSide.Both;
+                    _leftManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: true);
+                    _rightManipulatorLocalTarget = GetSelectedFreshLocal(leftHand: false);
+                }
             }
         }
 
@@ -317,6 +333,14 @@ public sealed class DesktopMockVRController : MonoBehaviour
         Mathf.Clamp(v.x, manipulatorMinLocal.x, manipulatorMaxLocal.x),
         Mathf.Clamp(v.y, manipulatorMinLocal.y, manipulatorMaxLocal.y),
         Mathf.Clamp(v.z, manipulatorMinLocal.z, manipulatorMaxLocal.z));
+
+    // Camera-local "ready to interact" pose used when a hand is selected via
+    // 1/2/3. Sits roughly at activeHandDefaultDistance in front, slightly to
+    // the hand's own side so left+right don't overlap in Both mode.
+    private Vector3 GetSelectedFreshLocal(bool leftHand) => ClampManipulator(new Vector3(
+        leftHand ? -0.05f : 0.05f,
+        -0.10f,
+        activeHandDefaultDistance));
 
     [Header("Professional Simulation")]
     [SerializeField] private bool enableSmoothing = true;
@@ -700,15 +724,24 @@ public sealed class DesktopMockVRController : MonoBehaviour
             return;
         }
 
-        // Hands only leave idle while their modifier is held (XR Sim model)
-        // or while attached to a held body. This avoids the "stuck at center
-        // forward" artifact that the cursor-locked aim-ray used to produce.
+        // A hand is "active" (visible at its manipulator target) when:
+        //   1. Its modifier key is held (T or Y) -> mouse-driven, or
+        //   2. It is the currently selected hand (1/2/3 fallback) -> sits at
+        //      its last manipulator target, refreshed on selection so the user
+        //      sees a clear visual switch, or
+        //   3. It is attached to a held body / lever.
+        // Otherwise the hand returns to its idle local position.
+        bool leftSelected = _activeHand == DesktopHandSide.Left
+            || _activeHand == DesktopHandSide.Both;
+        bool rightSelected = _activeHand == DesktopHandSide.Right
+            || _activeHand == DesktopHandSide.Both;
+
         bool leftActive = _leftManipulatorActive
-            || (IsHolding && _heldHandRoot == leftHandRoot)
-            || (_activeHand == DesktopHandSide.Both && IsHolding);
+            || leftSelected
+            || (IsHolding && _heldHandRoot == leftHandRoot);
         bool rightActive = _rightManipulatorActive
-            || (IsHolding && _heldHandRoot == rightHandRoot)
-            || (_activeHand == DesktopHandSide.Both && IsHolding);
+            || rightSelected
+            || (IsHolding && _heldHandRoot == rightHandRoot);
 
         if (leftActive)
         {
