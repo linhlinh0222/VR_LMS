@@ -100,6 +100,15 @@ float           IHeadingProvider  <---  CameraHeadingProvider
   `PowerStateChanged(bool)`. Actual chart rendering (S-57 ENC data,
   ship marker, route waypoints via RenderTexture + top-down camera) is
   deferred to a follow-up phase.
+- **VHF Radio (DSC)** - GMDSS / SOLAS Chapter IV VHF marine radio
+  (~600 verts, body 180×100×60mm). `VhfRadio` MonoBehaviour manages
+  channel selection (1-88, with constants for 16 distress / 70 DSC),
+  PTT (push-to-talk) state, volume, dual-watch, scan, and the 3-second
+  distress hold per IMO MSC.1/Circ.1364. Hold the distress button for
+  the full duration → `DistressAlertSent`; release early →
+  `DistressHoldCancelled`. Powering off cancels in-flight PTT, hold,
+  and dual-watch / scan. UnityEvents for every state change so lesson
+  scripts can wire scoring or escalation.
 - **AIS Transceiver** (Class A SOLAS V/19) - Raymarine AIS4000 reference
   (~3,700 verts, body 178×55×128mm with mount). Z-up Blender — needs
   (-90, 0, 0). `AisTransceiver` MonoBehaviour manages power + alarm
