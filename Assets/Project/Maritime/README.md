@@ -155,16 +155,120 @@ After step 5 the ports & adapters loop runs end-to-end:
 `ShipWheel → IRudderInput → HeadingFromRudderProvider → IHeadingProvider →
 MagneticCompass`.
 
+## Lesson architecture (Phase 12)
+
+The lesson layer follows the same ports & adapters discipline as the
+equipment layer. A lesson is *authored entirely in the inspector* — no
+custom C# is needed to ship a new scenario.
+
+```
+LessonStateMachine                           (sealed Mono, orchestrator)
+  ├─ phases : LessonPhaseGroup[]             (briefing → familiar → guided → assess → debrief)
+  │     └─ objectives : LessonObjectiveBase[]  (heterogeneous — power, position, heading, event)
+  └─ events : OnPhaseChanged / OnLessonCompleted
+
+Concrete objectives (all sealed, [AddComponentMenu]):
+  AisPowerObjective         polls AisTransceiver.IsPoweredOn
+  VhfPowerObjective         polls VhfRadio.IsPoweredOn
+  EcdisPowerObjective       polls ElectronicChartDisplay.IsPowered
+  RadarTransmitObjective    polls MarineRadar.IsTransmitting
+  TelegraphPositionObjective polls EngineOrderTelegraph.CurrentAnswer == required
+  HelmHeadingObjective      polls MagneticCompass.HeadingDegrees within tolerance + hold time
+  EventObjective            completes when NotifyTriggered() is invoked (designer wires UnityEvent)
+
+Score:
+  WrongHandPenaltyTracker   counts HandAwareLeverEvaluator.WrongHandUsed events
+  LessonScore (POCO)        time, completion %, penalties, STCW letter grade
+
+UI (TextMeshPro, world-space Canvas friendly):
+  LessonHUDView             current phase + objective list + elapsed timer
+  BriefingView              modal shown during Briefing phase, "Begin" button
+  DebriefView               modal shown after Complete, score table + Restart
+```
+
+Reference frameworks (May 2026 SOTA):
+- IMO Model Course 1.07 (Bridge Watchkeeping) — pedagogical phasing
+- IMO Model Course 1.22 (Ship Simulator + BRM) — assessment structure
+- STCW 2010 Manila Amendments, Function 1 — competency bands for grading
+- SOLAS V/19 (carriage requirements), Ch IV (GMDSS) — equipment behaviour
+- IMO MSC.1/Circ.1364 (VHF distress hold timing — 3 seconds)
+- IMO/IEC 62388 (radar performance standards)
+
+## Phase 12 lesson: "Bridge Familiarization & Departure"
+
+The default scenario authored on `LessonStateMachine` mirrors a real cadet's
+first watch on the bridge:
+
+1. **Briefing** — modal explains the scenario, cadet clicks Begin.
+2. **Familiarization** — cadet powers on AIS, VHF, ECDIS, and switches the
+   radar to Transmit (4 objectives in parallel, all required).
+3. **Guided** — set telegraph to **Slow Ahead** (right hand) and steer to
+   course **045°T** (left hand on helm). HandAwareLeverEvaluator scores the
+   hand; wrong hand drops the grade.
+4. **Assessment** — VHF distress test on Channel 16 (3-second hold per
+   IMO MSC.1/Circ.1364) wired through an `EventObjective` listening to
+   `VhfRadio.DistressAlertSent`.
+5. **Debrief** — `DebriefView` shows time, completion %, wrong-hand
+   penalties, and a letter grade in STCW competency bands (A/B/C/D).
+
+## Scene wiring (Unity Editor steps for Phase 12)
+
+The code in this branch compiles as-is. To make the lesson runnable in
+`MaritimeBridgeLMS.unity` complete the inspector wiring:
+
+1. **Import models** — drag `Assets/Project/Maritime/Models/Ocean/Ocean_v1.1.fbx`
+   and `Models/BridgeCabin/BridgeCabin_v1.0_empty.fbx` into the scene.
+   - Bridge Cabin: position `(0, 10.23, -28)` to align with existing
+     `Ship/Bridge_Structure` anchor; rotation identity (Y-up FBX).
+     Disable any placeholder station geometry it replaces.
+   - Ocean: position `(0, 0, 0)`, scale `1`. Note the README in
+     `Models/Ocean/` recommends replacing the ocean material with URP
+     BoatAttack water or a Shader Graph water shader for animated waves.
+2. **Place equipment under cabin anchors** — Bridge cabin ships
+   `anchor_AIS4000`, `anchor_ECDIS`, `anchor_Radar`, `anchor_ShipWheel`,
+   `anchor_Compass`, `anchor_EOT`, `anchor_VHF` empties. Re-parent each
+   existing equipment GameObject under its matching anchor and zero its
+   local position.
+3. **Create lesson controller** — empty GameObject `Lesson` with components:
+   `LessonStateMachine`, `WrongHandPenaltyTracker`. Authoring the phases
+   array on the state machine:
+   - Phase 0: `Briefing`, `requiresManualAdvance = true`, no objectives.
+   - Phase 1: `Familiarization` — drag `AisPowerObjective`,
+     `VhfPowerObjective`, `EcdisPowerObjective`, `RadarTransmitObjective`
+     monos (each on its own GameObject anywhere in the scene) into
+     `objectives`. `requireAllComplete = true`.
+   - Phase 2: `Guided` — drag `TelegraphPositionObjective` (required =
+     SlowAhead) and `HelmHeadingObjective` (heading 45°, ±5°, hold 2 s).
+   - Phase 3: `Assessment` — drag an `EventObjective` (wire
+     `VhfRadio.DistressAlertSent` → `EventObjective.NotifyTriggered`).
+   - Phase 4: `Debrief`, `requiresManualAdvance = true`, no objectives.
+4. **Build the UI Canvas** — World-space Canvas in front of player
+   (`(0, 11, -26)` works) with three child panels:
+   - `HUD` panel: TMP fields for title, phase, objectives, elapsed —
+     wire onto `LessonHUDView`.
+   - `Briefing` panel: title TMP, body TMP, Button "Begin" — wire onto
+     `BriefingView`. Set GameObject inactive by default (the view shows
+     it when phase is Briefing).
+   - `Debrief` panel: title TMP, score TMP, grade TMP, Button "Restart" —
+     wire onto `DebriefView`.
+5. **Hand-aware scoring** — keep the existing `HandAwareLeverEvaluator`
+   on the telegraph; `WrongHandPenaltyTracker` will auto-discover it.
+
+After step 5, press Play: briefing modal appears → click Begin →
+familiarization tasks → guided procedure → assessment → debrief score.
+
 ## Roadmap
 
 - Hook `EngineOrderTelegraph` to a desktop/XR grab driver so the lever can be
   user-controlled (today it's programmatic only via `SetOrder`).
 - Replace the legacy `MarineTelegraph` placeholder with the new EOT once
   interaction is wired; rewire `MaritimeTelegraphLessonController.telegraph`.
-- Helm wheel - `IRudderInput` port, integrate steering rate to feed
-  `HeadingFromRudderProvider` (replaces `CameraHeadingProvider` in Phase 2).
 - Radar, ECDIS, AIS - share a `BridgeInstrumentDisplay` panel base when 3+
   display devices land (extract base then per YAGNI, not before).
+- Replace baked Ocean material with URP BoatAttack water shader for animated
+  waves (currently static-displaced plane from Blender export).
+- Add audio cues (objective complete chime, phase voice-over) and cmi5/xAPI
+  telemetry export of `LessonScore` for LMS integration.
 
 ## Desktop controls (Modifier-Capture pattern, Phase 11)
 
