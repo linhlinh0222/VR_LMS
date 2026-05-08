@@ -100,9 +100,23 @@ float           IHeadingProvider  <---  CameraHeadingProvider
   `PowerStateChanged(bool)`. Actual chart rendering (S-57 ENC data,
   ship marker, route waypoints via RenderTexture + top-down camera) is
   deferred to a follow-up phase.
-  Two display devices land — when AIS arrives as the 3rd, extract
-  shared power-state surface into `BridgeInstrumentDisplay` base per
-  YAGNI rule.
+- **AIS Transceiver** (Class A SOLAS V/19) - Raymarine AIS4000 reference
+  (~3,700 verts, body 178×55×128mm with mount). Z-up Blender — needs
+  (-90, 0, 0). `AisTransceiver` MonoBehaviour manages power + alarm
+  states with auto-discovered green status LED + red alarm LED.
+  LED visuals via `MaterialPropertyBlock` (no per-LED material instance,
+  no leak — same pattern as `MarineTelegraphLessonFeedback`). Alarm
+  pulse rate is configurable (default 2 Hz). Public API: `PowerOn`/
+  `PowerOff`/`TriggerAlarm`/`ClearAlarm` + 7 D-pad press methods that
+  raise events only when powered (`PressDpadUp`/`Down`/`Left`/`Right`/
+  `PressOk`/`PressBack`/`PressMenu`). Powering off auto-clears the alarm
+  to match real device behavior.
+  After 3 display devices, the YAGNI rule still wins: each class is
+  ~140 lines and the shared surface (power state + UnityEvent) is small
+  enough that extracting `BridgeInstrumentDisplay` would only save ~5
+  lines per device. If a 4th display lands and starts duplicating real
+  logic (range/zoom step controllers, brightness, screen-on tween),
+  refactor at that point.
 
 ## Phase 5 wiring (must be done in Unity Editor; MCP automation pending)
 

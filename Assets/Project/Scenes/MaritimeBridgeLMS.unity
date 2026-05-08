@@ -634,6 +634,124 @@ Transform:
   - {fileID: 550654089}
   m_Father: {fileID: 431743311}
   m_LocalEulerAnglesHint: {x: -3.8616955, y: 0.34227747, z: -1.0600207}
+--- !u!1001 &35261543
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 39891744}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.3260012
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6830127
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.6830127
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.18301271
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.18301271
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      propertyPath: m_Name
+      value: AIS4000
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 35261546}
+  m_SourcePrefab: {fileID: 100100000, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+--- !u!4 &35261544 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+  m_PrefabInstance: {fileID: 35261543}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &35261545 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b68a2974ad869324b9a26a56ae2f91b9, type: 3}
+  m_PrefabInstance: {fileID: 35261543}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &35261546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35261545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61f1f17b35eaf8d4a94027cb066b6c0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ComprehensiveDemoRuntime::MaritimeLMS.Ais.AisTransceiver
+  statusLedRenderer: {fileID: 0}
+  alarmLedRenderer: {fileID: 0}
+  ledOffColor: {r: 0.06, g: 0.06, b: 0.06, a: 1}
+  ledStatusOnColor: {r: 0.1, g: 0.85, b: 0.2, a: 1}
+  ledAlarmOnColor: {r: 0.9, g: 0.1, b: 0.05, a: 1}
+  onEmissionIntensity: 1.6
+  alarmPulses: 1
+  alarmPulseHz: 2
+  startPoweredOn: 1
+  PowerStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  AlarmStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  DpadUpPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  DpadDownPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  DpadLeftPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  DpadRightPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  OkPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  BackPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  MenuPressed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &38283789
 GameObject:
   m_ObjectHideFlags: 0
@@ -735,6 +853,7 @@ Transform:
   - {fileID: 1057904055}
   - {fileID: 723900465}
   - {fileID: 1052843261}
+  - {fileID: 35261544}
   m_Father: {fileID: 705187155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &41450107
