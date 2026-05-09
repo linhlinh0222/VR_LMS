@@ -1,4 +1,4 @@
-# Bridge Health Check — 2026-05-10 01:51
+# Bridge Health Check — 2026-05-10 01:54
 
 ## Camera
 - pos (0.00, 11.95, -28.00)  rot (10.00, 0.00, 0.00)
@@ -10,46 +10,37 @@
 ### AIS
 - active: True
 - renderers: 25 (25 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
-- centre viewport: (0.78, 0.35, z=2.28) in-frustum: True
+- colliders: 25 (25 active non-trigger)
+- centre viewport: (0.65, 0.35, z=2.28) in-frustum: True
 ### VHF
 - active: True
 - renderers: 10 (10 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
-- centre viewport: (1.12, 0.31, z=2.08) in-frustum: False
-- ⚠️ outside camera frustum
+- colliders: 10 (10 active non-trigger)
+- centre viewport: (0.94, 0.33, z=2.18) in-frustum: True
 ### ECDIS
 - active: True
 - renderers: 12 (12 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
-- centre viewport: (-0.12, 0.37, z=2.09) in-frustum: False
-- ⚠️ outside camera frustum
+- colliders: 12 (12 active non-trigger)
+- centre viewport: (0.06, 0.38, z=2.19) in-frustum: True
 ### Radar
 - active: True
 - renderers: 10 (10 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
-- centre viewport: (0.22, 0.40, z=2.28) in-frustum: True
+- colliders: 10 (10 active non-trigger)
+- centre viewport: (0.35, 0.40, z=2.28) in-frustum: True
 ### EOT
 - active: True
 - renderers: 9 (9 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
+- colliders: 9 (9 active non-trigger)
 - centre viewport: (0.48, 0.18, z=1.42) in-frustum: True
 ### Compass
 - active: True
 - renderers: 10 (10 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
+- colliders: 10 (10 active non-trigger)
 - centre viewport: (0.50, 0.74, z=1.97) in-frustum: True
 ### ShipWheel
 - active: True
 - renderers: 21 (21 active)
-- colliders: 0 (0 active non-trigger)
-- ⚠️ no active solid colliders — LMB grab raycast cannot hit
+- colliders: 21 (21 active non-trigger)
 - centre viewport: (0.14, 0.15, z=1.10) in-frustum: True
 
 ## Lighting
@@ -63,4 +54,4 @@
 - MaritimeLessonRoot: active
 - LessonCanvas: active
 
-## Total issues: **9**
+## Total issues: **0**
