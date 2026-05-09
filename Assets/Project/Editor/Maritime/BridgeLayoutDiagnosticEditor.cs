@@ -199,9 +199,9 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeLayoutDiagnosticAutoHook
     {
-        // v4: bumped after Phase 19 scale + lift + markers so the
-        // diagnostic re-runs to confirm the new equipment AABBs.
-        private const string SessionStateKey = "MaritimeLMS.LayoutDiagRan.v4";
+        // v5: bumped after Phase 20 layout restructure so the diagnostic
+        // captures the new world positions matching the reference photo.
+        private const string SessionStateKey = "MaritimeLMS.LayoutDiagRan.v5";
 
         static BridgeLayoutDiagnosticAutoHook()
         {
