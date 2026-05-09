@@ -203,6 +203,30 @@ namespace MaritimeLMS.LessonsEditor
             return go;
         }
 
+        // UI children must own a RectTransform from creation: a GameObject that
+        // starts with a plain Transform cannot have one added later (Unity treats
+        // Transform/RectTransform as a single slot), and parenting it under a
+        // Canvas would leave it without the layout component the rest of the
+        // scaffolder expects. If an existing child is missing a RectTransform
+        // (legacy from a failed earlier scaffold), destroy + recreate it so the
+        // re-run repairs rather than re-fails.
+        private static GameObject EnsureUIChild(Transform parent, string name)
+        {
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                Transform child = parent.GetChild(i);
+                if (child.name != name) continue;
+                if (child is RectTransform) return child.gameObject;
+                Undo.DestroyObjectImmediate(child.gameObject);
+                break;
+            }
+
+            GameObject go = new GameObject(name, typeof(RectTransform));
+            Undo.RegisterCreatedObjectUndo(go, $"Create {name}");
+            go.transform.SetParent(parent, false);
+            return go;
+        }
+
         private static T EnsureObjective<T>(Transform container, string objectName,
             string description, LessonPhase phase) where T : LessonObjectiveBase
         {
@@ -417,7 +441,7 @@ namespace MaritimeLMS.LessonsEditor
 
         private static void BuildHudPanel(Transform canvas, LessonStateMachine stateMachine)
         {
-            GameObject panel = EnsureChild(canvas, HudPanelName);
+            GameObject panel = EnsureUIChild(canvas, HudPanelName);
             RectTransform rt = panel.GetComponent<RectTransform>() ?? panel.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0f, 0.65f);
             rt.anchorMax = new Vector2(0.45f, 1f);
@@ -449,7 +473,7 @@ namespace MaritimeLMS.LessonsEditor
 
         private static void BuildBriefingPanel(Transform canvas, LessonStateMachine stateMachine)
         {
-            GameObject panel = EnsureChild(canvas, BriefingPanelName);
+            GameObject panel = EnsureUIChild(canvas, BriefingPanelName);
             RectTransform rt = panel.GetComponent<RectTransform>() ?? panel.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.20f, 0.20f);
             rt.anchorMax = new Vector2(0.80f, 0.80f);
@@ -479,7 +503,7 @@ namespace MaritimeLMS.LessonsEditor
 
         private static void BuildDebriefPanel(Transform canvas, LessonStateMachine stateMachine)
         {
-            GameObject panel = EnsureChild(canvas, DebriefPanelName);
+            GameObject panel = EnsureUIChild(canvas, DebriefPanelName);
             panel.SetActive(false);
             RectTransform rt = panel.GetComponent<RectTransform>() ?? panel.AddComponent<RectTransform>();
             rt.anchorMin = new Vector2(0.20f, 0.20f);
@@ -528,14 +552,19 @@ namespace MaritimeLMS.LessonsEditor
         {
             Transform existingT = parent.Find(name);
             GameObject go = existingT != null ? existingT.gameObject : null;
+            if (go != null && !(existingT is RectTransform))
+            {
+                Undo.DestroyObjectImmediate(go);
+                go = null;
+            }
             if (go == null)
             {
-                go = new GameObject(name);
+                go = new GameObject(name, typeof(RectTransform));
                 Undo.RegisterCreatedObjectUndo(go, $"Create {name}");
                 go.transform.SetParent(parent, false);
             }
 
-            RectTransform rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
+            RectTransform rt = (RectTransform)go.transform;
             rt.anchorMin = anchorMin;
             rt.anchorMax = anchorMax;
             rt.offsetMin = Vector2.zero;
@@ -558,14 +587,19 @@ namespace MaritimeLMS.LessonsEditor
         {
             Transform existingT = parent.Find(name);
             GameObject go = existingT != null ? existingT.gameObject : null;
+            if (go != null && !(existingT is RectTransform))
+            {
+                Undo.DestroyObjectImmediate(go);
+                go = null;
+            }
             if (go == null)
             {
-                go = new GameObject(name);
+                go = new GameObject(name, typeof(RectTransform));
                 Undo.RegisterCreatedObjectUndo(go, $"Create {name}");
                 go.transform.SetParent(parent, false);
             }
 
-            RectTransform rt = go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>();
+            RectTransform rt = (RectTransform)go.transform;
             rt.anchorMin = anchorMin;
             rt.anchorMax = anchorMax;
             rt.offsetMin = Vector2.zero;
@@ -581,13 +615,18 @@ namespace MaritimeLMS.LessonsEditor
 
             Transform labelT = rt.Find("Label");
             GameObject labelGo = labelT != null ? labelT.gameObject : null;
+            if (labelGo != null && !(labelT is RectTransform))
+            {
+                Undo.DestroyObjectImmediate(labelGo);
+                labelGo = null;
+            }
             if (labelGo == null)
             {
-                labelGo = new GameObject("Label");
+                labelGo = new GameObject("Label", typeof(RectTransform));
                 Undo.RegisterCreatedObjectUndo(labelGo, "Create Button Label");
                 labelGo.transform.SetParent(rt, false);
             }
-            RectTransform labelRt = labelGo.GetComponent<RectTransform>() ?? labelGo.AddComponent<RectTransform>();
+            RectTransform labelRt = (RectTransform)labelGo.transform;
             labelRt.anchorMin = Vector2.zero;
             labelRt.anchorMax = Vector2.one;
             labelRt.offsetMin = Vector2.zero;

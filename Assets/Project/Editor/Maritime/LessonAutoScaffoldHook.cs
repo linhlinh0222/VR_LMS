@@ -25,7 +25,10 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class LessonAutoScaffoldHook
     {
-        private const string SessionStateKey = "MaritimeLMS.AutoScaffoldRan";
+        // Bumped to v2 after the v1 run partially scaffolded but failed on
+        // EnsureChild creating UI GameObjects without RectTransforms. The new
+        // EnsureUIChild repairs the partial state on rerun.
+        private const string SessionStateKey = "MaritimeLMS.AutoScaffoldRan.v2";
         private const string ScenePath = "Assets/Project/Scenes/MaritimeBridgeLMS.unity";
         private const string LessonRootName = "MaritimeLessonRoot";
 
@@ -75,11 +78,22 @@ namespace MaritimeLMS.LessonsEditor
                 active = opened;
             }
 
-            if (GameObject.Find(LessonRootName) != null)
+            // Skip only if the previous scaffold finished cleanly — i.e. the
+            // root exists AND its LessonCanvas has a HUD RectTransform child.
+            // A partially-scaffolded root from an earlier failed run is treated
+            // as 'still needs work' so the new EnsureUIChild repair logic runs.
+            GameObject existingRoot = GameObject.Find(LessonRootName);
+            if (existingRoot != null)
             {
-                Debug.Log($"[Maritime LMS] '{LessonRootName}' already present in '{active.name}' — skipping auto-scaffold.");
-                SessionState.SetBool(SessionStateKey, true);
-                return;
+                Transform canvas = existingRoot.transform.Find("LessonCanvas");
+                Transform hud = canvas != null ? canvas.Find("HUD") : null;
+                if (hud is RectTransform)
+                {
+                    Debug.Log($"[Maritime LMS] '{LessonRootName}' already scaffolded cleanly in '{active.name}' — skipping.");
+                    SessionState.SetBool(SessionStateKey, true);
+                    return;
+                }
+                Debug.Log($"[Maritime LMS] '{LessonRootName}' present but UI looks broken — re-running scaffolder to repair.");
             }
 
             try
