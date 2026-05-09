@@ -157,7 +157,8 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class LessonIntegrityAutoHook
     {
-        private const string SessionStateKey = "MaritimeLMS.LessonIntegrityRan.v1";
+        // v2: re-run after Phase 26 scaffolder fix.
+        private const string SessionStateKey = "MaritimeLMS.LessonIntegrityRan.v2";
 
         static LessonIntegrityAutoHook() { EditorApplication.delayCall += MaybeRun; }
 

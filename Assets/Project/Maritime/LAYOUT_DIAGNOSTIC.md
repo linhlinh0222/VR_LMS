@@ -1,4 +1,4 @@
-# Bridge Layout Diagnostic — 2026-05-10 01:54
+# Bridge Layout Diagnostic — 2026-05-10 03:13
 Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 
 ## Camera (player rig)
@@ -26,48 +26,48 @@ Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 ## Equipment
 ### AIS
 - Parent: `anchor_AIS4000`
-- World position: (1.05, 11.05, -25.80)
+- World position: (0.55, 11.05, -25.80)
 - World rotation: (270.00, 0.00, 0.00)
-- Local position:  (-0.45, -0.20, -0.13)
+- Local position:  (-0.95, -0.20, -0.13)
 - Local rotation:  (0.00, 0.00, 0.00)
 - Local scale:     (1.00, 1.00, 1.00)
 - Active in hierarchy: True
 - Bounds size:     (0.19, 0.17, 0.09)
-- Distance to camera: 2.60m
-- Camera dot (1=in front): 0.89
+- Distance to camera: 2.44m
+- Camera dot (1=in front): 0.95
 ### VHF
 - Parent: `anchor_VHF`
-- World position: (2.10, 11.05, -26.00)
+- World position: (1.55, 11.05, -25.90)
 - World rotation: (270.00, 0.00, 0.00)
-- Local position:  (-1.40, -0.50, -0.13)
+- Local position:  (-1.95, -0.60, -0.13)
 - Local rotation:  (0.00, 0.00, 0.00)
 - Local scale:     (1.00, 1.00, 1.00)
 - Active in hierarchy: True
 - Bounds size:     (0.18, 0.11, 0.07)
-- Distance to camera: 3.04m
-- Camera dot (1=in front): 0.70
+- Distance to camera: 2.76m
+- Camera dot (1=in front): 0.81
 ### ECDIS
 - Parent: `anchor_ECDIS`
-- World position: (-2.10, 11.05, -26.00)
+- World position: (-1.55, 11.05, -25.90)
 - World rotation: (270.00, 0.00, 0.00)
-- Local position:  (-2.10, 0.00, -0.13)
+- Local position:  (-1.55, -0.10, -0.13)
 - Local rotation:  (0.00, 0.00, 0.00)
 - Local scale:     (1.00, 1.00, 1.00)
 - Active in hierarchy: True
 - Bounds size:     (0.62, 0.39, 0.14)
-- Distance to camera: 3.04m
-- Camera dot (1=in front): 0.70
+- Distance to camera: 2.76m
+- Camera dot (1=in front): 0.81
 ### Radar
 - Parent: `anchor_Radar`
-- World position: (-1.05, 11.05, -25.80)
+- World position: (-0.55, 11.05, -25.80)
 - World rotation: (270.00, 0.00, 0.00)
-- Local position:  (0.45, -0.20, -0.13)
+- Local position:  (0.95, -0.20, -0.13)
 - Local rotation:  (0.00, 0.00, 0.00)
 - Local scale:     (1.00, 1.00, 1.00)
 - Active in hierarchy: True
 - Bounds size:     (0.38, 0.43, 0.16)
-- Distance to camera: 2.60m
-- Camera dot (1=in front): 0.89
+- Distance to camera: 2.44m
+- Camera dot (1=in front): 0.95
 ### EOT
 - Parent: `anchor_EOT`
 - World position: (0.00, 10.50, -26.70)

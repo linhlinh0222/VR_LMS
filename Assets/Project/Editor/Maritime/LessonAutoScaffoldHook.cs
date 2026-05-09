@@ -25,10 +25,11 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class LessonAutoScaffoldHook
     {
-        // Bumped to v2 after the v1 run partially scaffolded but failed on
-        // EnsureChild creating UI GameObjects without RectTransforms. The new
-        // EnsureUIChild repairs the partial state on rerun.
-        private const string SessionStateKey = "MaritimeLMS.AutoScaffoldRan.v2";
+        // v3: bumped after Phase 25 integrity check found DebriefView
+        // missing; the v2 skip predicate only checked HUD existence which
+        // let a half-scaffolded canvas slip through. v3 also requires
+        // DebriefPanel + DebriefView before skipping.
+        private const string SessionStateKey = "MaritimeLMS.AutoScaffoldRan.v3";
         private const string ScenePath = "Assets/Project/Scenes/MaritimeBridgeLMS.unity";
         private const string LessonRootName = "MaritimeLessonRoot";
 
@@ -78,22 +79,31 @@ namespace MaritimeLMS.LessonsEditor
                 active = opened;
             }
 
-            // Skip only if the previous scaffold finished cleanly — i.e. the
-            // root exists AND its LessonCanvas has a HUD RectTransform child.
-            // A partially-scaffolded root from an earlier failed run is treated
-            // as 'still needs work' so the new EnsureUIChild repair logic runs.
+            // Skip only when the previous scaffold finished cleanly: root +
+            // LessonCanvas + HUD/Briefing/Debrief panels (all RectTransform)
+            // and the three view MonoBehaviours present. A partially-built
+            // canvas (e.g. DebriefView dropped during a manual scene edit)
+            // is treated as 'still needs work' so re-running the scaffolder
+            // repairs it via the idempotent EnsureUIChild logic.
             GameObject existingRoot = GameObject.Find(LessonRootName);
             if (existingRoot != null)
             {
                 Transform canvas = existingRoot.transform.Find("LessonCanvas");
                 Transform hud = canvas != null ? canvas.Find("HUD") : null;
-                if (hud is RectTransform)
+                Transform briefing = canvas != null ? canvas.Find("BriefingPanel") : null;
+                Transform debrief = canvas != null ? canvas.Find("DebriefPanel") : null;
+                bool allPanelsOk = hud is RectTransform && briefing is RectTransform && debrief is RectTransform;
+                bool allViewsOk = allPanelsOk
+                    && hud.GetComponent<MaritimeLMS.Lessons.LessonHUDView>() != null
+                    && briefing.GetComponent<MaritimeLMS.Lessons.BriefingView>() != null
+                    && debrief.GetComponent<MaritimeLMS.Lessons.DebriefView>() != null;
+                if (allViewsOk)
                 {
                     Debug.Log($"[Maritime LMS] '{LessonRootName}' already scaffolded cleanly in '{active.name}' — skipping.");
                     SessionState.SetBool(SessionStateKey, true);
                     return;
                 }
-                Debug.Log($"[Maritime LMS] '{LessonRootName}' present but UI looks broken — re-running scaffolder to repair.");
+                Debug.Log($"[Maritime LMS] '{LessonRootName}' present but UI looks incomplete (panels={allPanelsOk}, views={allViewsOk}) — re-running scaffolder to repair.");
             }
 
             try
