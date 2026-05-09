@@ -1,4 +1,4 @@
-# Bridge Orientation Fix Dry Run — 2026-05-10 00:50
+# Bridge Orientation Fix Dry Run — 2026-05-10 01:37
 
 ## 1. Cabin rotation
 - Current local euler: (270.00, 0.00, 0.00)
@@ -15,7 +15,7 @@
 - ShipWheel  already at identity — no change
 
 ## 3. Camera reposition
-- Current world pos: (0.00, 11.40, -27.50)  rot (0.00, 0.00, 0.00)
+- Current world pos: (0.00, 11.95, -28.00)  rot (10.00, 0.00, 0.00)
 - Target  world pos: (0.00, 11.60, -25.60)  rot (0.00, 180.00, 0.00)
 - Action: reposition
 
