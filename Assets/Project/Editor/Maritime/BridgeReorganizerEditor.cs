@@ -40,10 +40,12 @@ namespace MaritimeLMS.LessonsEditor
         // Placeholder GameObject names that the FBX bridge cabin replaces.
         // Top-level Ship-children only — children of these are dragged along
         // when the parent is removed.
+        // NOTE: 'Maritime Training Station' and 'Generated Station Geometry'
+        // intentionally KEPT per user direction (some lesson-side
+        // colliders/feedback objects nest under them; revisit later when
+        // those are migrated to the new BridgeCabin anchors).
         private static readonly string[] PlaceholderTopLevelNames =
         {
-            "Maritime Training Station", // procedural cabin shell + walls + windows + console
-            "Generated Station Geometry",
             "OceanAmbient",
             "Open Sea Surface"
         };

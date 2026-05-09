@@ -24,6 +24,12 @@ namespace MaritimeLMS.LessonsEditor
     public static class BridgeReorganizerAutoHook
     {
         private const string SessionStateKey = "MaritimeLMS.ReorgReportRan.v1";
+        // Sentinel file: if present, the hook runs Execute() instead of just
+        // the dry-run, then deletes the file. Lets a separate process
+        // (typically a `git push` of a sentinel commit, or `touch` on the
+        // file from outside the editor) trigger the destructive pass without
+        // needing focus to click a menu item.
+        private const string ExecuteSentinelPath = "Library/MaritimeLMS_AutoExecuteReorg.flag";
 
         static BridgeReorganizerAutoHook()
         {
@@ -35,6 +41,14 @@ namespace MaritimeLMS.LessonsEditor
         {
             SessionState.SetBool(SessionStateKey, false);
             Debug.Log("[Maritime LMS] Reorganize hook rearmed — next compile/load will write a fresh dry-run report.");
+        }
+
+        [MenuItem("Tools/Maritime LMS/Arm Auto-Execute Reorg")]
+        public static void ArmAutoExecute()
+        {
+            System.IO.File.WriteAllText(ExecuteSentinelPath, System.DateTime.UtcNow.ToString("o"));
+            SessionState.SetBool(SessionStateKey, false);
+            Debug.Log($"[Maritime LMS] Auto-execute armed — sentinel at '{ExecuteSentinelPath}' will trigger Execute on next compile/load.");
         }
 
         private static void MaybeReport()
@@ -61,14 +75,20 @@ namespace MaritimeLMS.LessonsEditor
                 return;
             }
 
+            bool executeRequested = System.IO.File.Exists(ExecuteSentinelPath);
             try
             {
-                Debug.Log("[Maritime LMS] Reorganize dry-run starting...");
-                BridgeReorganizerEditor.Run(execute: false);
+                Debug.Log($"[Maritime LMS] Reorganize {(executeRequested ? "EXECUTE" : "dry-run")} starting...");
+                BridgeReorganizerEditor.Run(execute: executeRequested);
+                if (executeRequested)
+                {
+                    try { System.IO.File.Delete(ExecuteSentinelPath); }
+                    catch (System.Exception ex) { Debug.LogWarning($"[Maritime LMS] Could not delete reorg sentinel: {ex.Message}"); }
+                }
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[Maritime LMS] Reorganize dry-run threw: {ex.Message}");
+                Debug.LogError($"[Maritime LMS] Reorganize {(executeRequested ? "EXECUTE" : "dry-run")} threw: {ex.Message}");
             }
             finally
             {
