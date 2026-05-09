@@ -44,7 +44,9 @@ namespace MaritimeLMS.LessonsEditor
         private const string BridgeCabinModelGuidHint = "BridgeCabin_v1.0_empty";
 
         [MenuItem(MenuPath)]
-        public static void Scaffold()
+        public static void Scaffold() => Scaffold(showCompletionDialog: true);
+
+        public static void Scaffold(bool showCompletionDialog)
         {
             Scene scene = SceneManager.GetActiveScene();
             if (!scene.IsValid())
@@ -106,6 +108,7 @@ namespace MaritimeLMS.LessonsEditor
                     LessonPhase.Assessment);
 
                 AssignEquipmentReferences(aisObj, vhfObj, ecdisObj, radarObj, telegraphObj, helmObj, vhfDistress);
+                WireVhfDistressEvent(vhfDistress);
 
                 LessonStateMachine stateMachine = EnsureLessonStateMachine(root,
                     aisObj, vhfObj, ecdisObj, radarObj,
@@ -123,14 +126,21 @@ namespace MaritimeLMS.LessonsEditor
                 Debug.Log($"<color=cyan>[Maritime LMS]</color> Phase 12 lesson scaffolded into '{scene.name}'. " +
                           "Verify equipment references in Inspector, then press Play.");
 
-                EditorUtility.DisplayDialog("Maritime LMS",
-                    "Phase 12 lesson scaffolded.\n\n" +
-                    "Next:\n" +
-                    "1. Confirm equipment references on the objective GameObjects.\n" +
-                    "2. Wire VhfRadio.DistressAlertSent → " + vhfDistress.name + ".NotifyTriggered (UnityEvent in Inspector).\n" +
-                    "3. Open " + CanvasName + " and adjust UI font sizes / panel positions to taste.\n" +
-                    "4. Press Play.",
-                    "OK");
+                if (showCompletionDialog)
+                {
+                    EditorUtility.DisplayDialog("Maritime LMS",
+                        "Phase 12 lesson scaffolded — ready to Play.\n\n" +
+                        "Auto-wired:\n" +
+                        " - Equipment references on every objective GameObject\n" +
+                        " - VhfRadio.DistressAlertSent → " + vhfDistress.name + ".NotifyTriggered\n" +
+                        " - 5 lesson phases on LessonStateMachine\n" +
+                        " - World-space LessonCanvas (HUD / Briefing / Debrief)\n\n" +
+                        "Optional polish:\n" +
+                        " - Reposition '" + CanvasName + "' if it overlaps the cabin geometry\n" +
+                        " - Adjust UI font sizes to taste\n\n" +
+                        "Now press Play.",
+                        "OK");
+                }
             }
             finally
             {
@@ -242,6 +252,45 @@ namespace MaritimeLMS.LessonsEditor
             // VHF distress event is wired in Inspector by the user
             // (UnityEvents are not safely auto-bound from a script —
             // consumer needs to choose the right runtime/persistent target).
+        }
+
+        private static void WireVhfDistressEvent(EventObjective vhfDistress)
+        {
+            VhfRadio vhf = Object.FindFirstObjectByType<VhfRadio>();
+            if (vhf == null || vhfDistress == null) return;
+
+            using SerializedObject so = new SerializedObject(vhf);
+            SerializedProperty distressEvent = so.FindProperty("DistressAlertSent");
+            if (distressEvent == null) return;
+            SerializedProperty calls = distressEvent.FindPropertyRelative("m_PersistentCalls.m_Calls");
+            if (calls == null) return;
+
+            // De-dup: skip if a listener already targets the right method on this object.
+            for (int i = 0; i < calls.arraySize; i++)
+            {
+                SerializedProperty existing = calls.GetArrayElementAtIndex(i);
+                if (existing.FindPropertyRelative("m_Target").objectReferenceValue == vhfDistress
+                    && existing.FindPropertyRelative("m_MethodName").stringValue == nameof(EventObjective.NotifyTriggered))
+                {
+                    return;
+                }
+            }
+
+            int newIndex = calls.arraySize;
+            calls.arraySize = newIndex + 1;
+            SerializedProperty call = calls.GetArrayElementAtIndex(newIndex);
+            call.FindPropertyRelative("m_Target").objectReferenceValue = vhfDistress;
+            SerializedProperty assemblyName = call.FindPropertyRelative("m_TargetAssemblyTypeName");
+            if (assemblyName != null) assemblyName.stringValue = typeof(EventObjective).AssemblyQualifiedName;
+            call.FindPropertyRelative("m_MethodName").stringValue = nameof(EventObjective.NotifyTriggered);
+            // PersistentListenerMode.Void = 1 (no-arg method)
+            call.FindPropertyRelative("m_Mode").enumValueIndex = 1;
+            // UnityEventCallState.RuntimeOnly = 2
+            SerializedProperty callState = call.FindPropertyRelative("m_CallState");
+            if (callState != null) callState.enumValueIndex = 2;
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vhf);
         }
 
         private static void AssignSerializedReference(Object owner, string fieldName, Object value)
