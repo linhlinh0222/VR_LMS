@@ -280,7 +280,7 @@ mock matches what the cadet will encounter when they jump to a real headset.
 | Look (head/HMD) | Mouse move | Cursor locked. ESC to release for menus, click in viewport to re-lock. |
 | Walk | W / A / S / D | LeftShift sprints. |
 | Vertical body translation | Space (up) / LeftCtrl (down) | XR Device Simulator convention. |
-| **Switch active hand** | **1 = right, 2 = left, 3 = both** | Selected hand closes slightly into a "ready" grip (subtle visual cue). Hands stay at their natural idle positions so they don't block the view. |
+| **Switch active hand** | **1 = left, 2 = right, 3 = both** | Natural left→right ordering matching what you see on screen. Selected hand closes slightly into a "ready" grip. |
 | **Move RIGHT hand with mouse** | **Hold T** | Camera freezes; mouse delta drives the right hand in 3D space. Position persists when released. |
 | **Move LEFT hand with mouse** | **Hold Y** | Same as T but for left hand. |
 | Move both hands together | Hold T + Y | Both controllers move with the mouse. |

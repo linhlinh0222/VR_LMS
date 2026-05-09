@@ -284,13 +284,14 @@ public sealed class DesktopMockVRController : MonoBehaviour
             }
             else
             {
-                // Explicit selection (Alpha + Keypad — Vietnamese IME may eat
-                // top-row 2/3 diacritics, so accept numpad too). Hands stay
-                // at their natural idle positions; visual feedback for the
-                // active hand comes from a subtle grip "ready" pose, not by
-                // moving the hand into the camera's view.
-                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) _activeHand = DesktopHandSide.Right;
-                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) _activeHand = DesktopHandSide.Left;
+                // Explicit selection — natural left-to-right ordering
+                // matching the on-screen layout: key 1 picks the LEFT hand
+                // (visible on the left side of the player's view, X = -0.28),
+                // key 2 picks the RIGHT hand (X = +0.28), key 3 picks both.
+                // Accepts both Alpha (top row) and Keypad variants because
+                // Vietnamese IME can eat top-row 2/3 (huyền/hỏi diacritics).
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) _activeHand = DesktopHandSide.Left;
+                else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) _activeHand = DesktopHandSide.Right;
                 else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) _activeHand = DesktopHandSide.Both;
             }
         }
