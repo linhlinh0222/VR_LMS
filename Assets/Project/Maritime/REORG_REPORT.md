@@ -1,4 +1,4 @@
-# Bridge Reorganize Dry Run — 2026-05-09 10:37
+# Bridge Reorganize EXECUTE — 2026-05-09 10:48
 Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 
 ## 1. Anchors detected
@@ -20,8 +20,6 @@ Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 - ShipWheel  `Ship/Bridge_Structure/Maritime Training Station/ShipWheel` → `BridgeCabin/anchor_ShipWheel`
 
 ## 3. Placeholders flagged for removal
-- `Ship/Bridge_Structure/Maritime Training Station` (10 immediate children)
-- `Ship/Bridge_Structure/Maritime Training Station/Generated Station Geometry` (34 immediate children)
 - `OceanAmbient` (0 immediate children)
 - `Open Sea Surface` (0 immediate children)
 - `Ship/Bridge_Structure/Maritime Training Station/MarineTelegraph/Telegraph Desktop Pivot/Generated Telegraph Lever Shaft` (procedural placeholder)
@@ -29,8 +27,6 @@ Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 
 ## 4. Summary
 - Re-parent operations: **7**
-- Placeholders to remove: **6**
+- Placeholders to remove: **4**
 
-Dry-run only — nothing changed. To apply, run:
-`Tools/Maritime LMS/Reorganize Bridge — Execute (DESTRUCTIVE)`
-
+**Executed.** Scene saved.
