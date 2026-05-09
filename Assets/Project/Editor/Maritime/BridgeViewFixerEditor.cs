@@ -31,8 +31,13 @@ namespace MaritimeLMS.LessonsEditor
         private const string MenuExecute = "Tools/Maritime LMS/Fix Bridge View — Execute";
         private const string ReportPath = "Assets/Project/Maritime/VIEW_FIX_REPORT.md";
 
-        private static readonly Vector3 CameraTargetWorldPos = new Vector3(0f, 11.4f, -27.5f);
-        private static readonly Vector3 CameraTargetWorldEuler = new Vector3(0f, 0f, 0f);
+        // Phase 18 polish: lift camera to adult eye-level (cabin floor at
+        // y=10.23 + 1.7 m typical seafarer eye height ≈ 11.95) and pitch
+        // down 10° so the helm cluster (Y≈10.43) and the console row
+        // (Y≈11.18) are both inside the frustum. Step back to z=-28 so
+        // the helm wheel doesn't smash into the camera near-clip plane.
+        private static readonly Vector3 CameraTargetWorldPos = new Vector3(0f, 11.95f, -28.0f);
+        private static readonly Vector3 CameraTargetWorldEuler = new Vector3(10f, 0f, 0f);
 
         private static readonly string[] LegacyDisablePaths =
         {
@@ -179,7 +184,9 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeViewFixerAutoHook
     {
-        private const string SessionStateKey = "MaritimeLMS.ViewFixRan.v1";
+        // v2: bumped after Phase 18 camera-elevation tweak; lets the hook
+        // re-fire on the next compile so the new camera target is applied.
+        private const string SessionStateKey = "MaritimeLMS.ViewFixRan.v2";
         private const string ExecuteSentinelPath = "Library/MaritimeLMS_AutoExecuteViewFix.flag";
 
         static BridgeViewFixerAutoHook() { EditorApplication.delayCall += MaybeRun; }

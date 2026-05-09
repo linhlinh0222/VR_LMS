@@ -199,10 +199,9 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeLayoutDiagnosticAutoHook
     {
-        // v2: bumped after Phase 17 view-fix so the diagnostic re-runs to
-        // capture the post-fix layout (camera reoriented + legacy cabin
-        // disabled).
-        private const string SessionStateKey = "MaritimeLMS.LayoutDiagRan.v2";
+        // v3: bumped after Phase 18 camera-elevation so the diagnostic
+        // re-captures the new camera height + tilt.
+        private const string SessionStateKey = "MaritimeLMS.LayoutDiagRan.v3";
 
         static BridgeLayoutDiagnosticAutoHook()
         {

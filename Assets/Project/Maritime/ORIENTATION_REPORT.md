@@ -1,27 +1,27 @@
-# Bridge Orientation Fix EXECUTE — 2026-05-10 00:17
+# Bridge Orientation Fix Dry Run — 2026-05-10 00:41
 
 ## 1. Cabin rotation
-- Current local euler: (0.00, 0.00, 0.00)
+- Current local euler: (270.00, 0.00, 0.00)
 - Target local euler:  (-90.00, 0.00, 0.00)
-- Action: rotate
+- Action: already correct
 
 ## 2. Equipment local rotation reset
-- AIS        (270.00, 0.00, 0.00) → identity
-- VHF        (270.00, 0.00, 0.00) → identity
-- ECDIS      (270.00, 0.00, 0.00) → identity
-- Radar      (270.00, 0.00, 0.00) → identity
-- EOT        (270.00, 0.00, 0.00) → identity
-- Compass    (270.00, 0.00, 0.00) → identity
-- ShipWheel  (270.00, 0.00, 0.00) → identity
+- AIS        already at identity — no change
+- VHF        already at identity — no change
+- ECDIS      already at identity — no change
+- Radar      already at identity — no change
+- EOT        already at identity — no change
+- Compass    already at identity — no change
+- ShipWheel  already at identity — no change
 
 ## 3. Camera reposition
-- Current world pos: (0.02, 11.79, -25.62)  rot (11.50, 17.00, 0.00)
+- Current world pos: (0.00, 11.60, -25.60)  rot (0.00, 180.00, 0.00)
 - Target  world pos: (0.00, 11.60, -25.60)  rot (0.00, 180.00, 0.00)
-- Action: reposition
+- Action: already correct
 
 ## 4. Summary
-- Cabin rotation fix: yes
-- Equipment reset count: 7
-- Camera reposition: yes
+- Cabin rotation fix: no
+- Equipment reset count: 0
+- Camera reposition: no
 
-**Executed.** Scene saved.
+Dry-run only. To apply: `Tools/Maritime LMS/Fix Bridge Orientation — Execute`
