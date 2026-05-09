@@ -1,4 +1,4 @@
-# Bridge Reorganize EXECUTE — 2026-05-09 10:48
+# Bridge Reorganize Dry Run — 2026-05-09 23:12
 Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 
 ## 1. Anchors detected
@@ -11,22 +11,21 @@ Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 - ShipWheel  `BridgeCabin/anchor_ShipWheel`
 
 ## 2. Equipment re-parent plan
-- AIS        `Ship/Bridge_Structure/Maritime Training Station/AIS4000` → `BridgeCabin/anchor_AIS4000`
-- VHF        `Ship/Bridge_Structure/Maritime Training Station/VhfRadio` → `BridgeCabin/anchor_VHF`
-- ECDIS      `Ship/Bridge_Structure/Maritime Training Station/ECDIS` → `BridgeCabin/anchor_ECDIS`
-- Radar      `Ship/Bridge_Structure/Maritime Training Station/MarineRadar` → `BridgeCabin/anchor_Radar`
-- EOT        `Ship/Bridge_Structure/Maritime Training Station/EngineOrderTelegraph` → `BridgeCabin/anchor_EOT`
-- Compass    `Ship/Bridge_Structure/Maritime Training Station/MagneticCompass` → `BridgeCabin/anchor_Compass`
-- ShipWheel  `Ship/Bridge_Structure/Maritime Training Station/ShipWheel` → `BridgeCabin/anchor_ShipWheel`
+- AIS        already under anchor — no change
+- VHF        already under anchor — no change
+- ECDIS      already under anchor — no change
+- Radar      already under anchor — no change
+- EOT        already under anchor — no change
+- Compass    already under anchor — no change
+- ShipWheel  already under anchor — no change
 
 ## 3. Placeholders flagged for removal
-- `OceanAmbient` (0 immediate children)
-- `Open Sea Surface` (0 immediate children)
-- `Ship/Bridge_Structure/Maritime Training Station/MarineTelegraph/Telegraph Desktop Pivot/Generated Telegraph Lever Shaft` (procedural placeholder)
-- `Ship/Bridge_Structure/Maritime Training Station/MarineTelegraph/Telegraph Desktop Pivot/Generated Telegraph Lever Knob` (procedural placeholder)
+(none — already cleaned)
 
 ## 4. Summary
-- Re-parent operations: **7**
-- Placeholders to remove: **4**
+- Re-parent operations: **0**
+- Placeholders to remove: **0**
 
-**Executed.** Scene saved.
+Dry-run only — nothing changed. To apply, run:
+`Tools/Maritime LMS/Reorganize Bridge — Execute (DESTRUCTIVE)`
+
