@@ -165,7 +165,8 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeHealthCheckAutoHook
     {
-        private const string SessionStateKey = "MaritimeLMS.HealthCheckRan.v1";
+        // v2: re-run after Phase 23 (colliders + tighten console).
+        private const string SessionStateKey = "MaritimeLMS.HealthCheckRan.v2";
 
         static BridgeHealthCheckAutoHook() { EditorApplication.delayCall += MaybeRun; }
 

@@ -1,4 +1,4 @@
-# Bridge Layout Diagnostic — 2026-05-10 01:37
+# Bridge Layout Diagnostic — 2026-05-10 01:51
 Scene: `Assets/Project/Scenes/MaritimeBridgeLMS.unity`
 
 ## Camera (player rig)
