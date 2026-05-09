@@ -23,7 +23,10 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeReorganizerAutoHook
     {
-        private const string SessionStateKey = "MaritimeLMS.ReorgReportRan.v1";
+        // v2: bumped after the v1 hook (without sentinel logic) ran a
+        // dry-run and pinned the session flag to true. v2 forces re-arm so
+        // the new sentinel-aware code path actually fires.
+        private const string SessionStateKey = "MaritimeLMS.ReorgReportRan.v2";
         // Sentinel file: if present, the hook runs Execute() instead of just
         // the dry-run, then deletes the file. Lets a separate process
         // (typically a `git push` of a sentinel commit, or `touch` on the
