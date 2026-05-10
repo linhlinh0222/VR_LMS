@@ -93,9 +93,12 @@ namespace MaritimeLMS.LessonsEditor
 
             // Canvas + views.
             r.AppendLine("## UI views");
-            var hud = Object.FindFirstObjectByType<LessonHUDView>();
-            var brief = Object.FindFirstObjectByType<BriefingView>();
-            var deb = Object.FindFirstObjectByType<DebriefView>();
+            // Use FindObjectsInactive.Include because BriefingView/DebriefView
+            // are on panels that start inactive (shown only on phase enter)
+            // — searching active-only would falsely report them missing.
+            var hud = Object.FindAnyObjectByType<LessonHUDView>(FindObjectsInactive.Include);
+            var brief = Object.FindAnyObjectByType<BriefingView>(FindObjectsInactive.Include);
+            var deb = Object.FindAnyObjectByType<DebriefView>(FindObjectsInactive.Include);
             r.AppendLine($"- LessonHUDView: {(hud != null ? "present" : "**MISSING**")}");
             r.AppendLine($"- BriefingView:  {(brief != null ? "present" : "**MISSING**")}");
             r.AppendLine($"- DebriefView:   {(deb != null ? "present" : "**MISSING**")}");
@@ -157,9 +160,9 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class LessonIntegrityAutoHook
     {
-        // v3: re-run after Phase 27 DebriefView rebuilder so the integrity
-        // report reflects the new view component being present.
-        private const string SessionStateKey = "MaritimeLMS.LessonIntegrityRan.v3";
+        // v4: bumped after Phase 28 fixed FindFirstObjectByType skipping
+        // inactive Briefing/Debrief panels.
+        private const string SessionStateKey = "MaritimeLMS.LessonIntegrityRan.v4";
 
         static LessonIntegrityAutoHook() { EditorApplication.delayCall += MaybeRun; }
 
