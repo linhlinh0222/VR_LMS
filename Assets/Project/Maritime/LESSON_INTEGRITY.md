@@ -1,4 +1,4 @@
-# Lesson Integrity — 2026-05-10 03:13
+# Lesson Integrity — 2026-05-10 09:13
 
 ## State machine
 - on `MaritimeLessonRoot`
@@ -25,6 +25,6 @@
 ## UI views
 - LessonHUDView: present
 - BriefingView:  present
-- DebriefView:   **MISSING**
+- DebriefView:   present
 
-## Total issues: **1**
+## Total issues: **0**
