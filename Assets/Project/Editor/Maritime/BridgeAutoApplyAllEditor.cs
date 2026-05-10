@@ -25,8 +25,8 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeAutoApplyAllEditor
     {
-        // v2: bumped to include Phase 33 extra detail.
-        private const string SessionStateKey = "MaritimeLMS.AutoApplyAll.v2";
+        // v3: bumped to include Phase 34 cabin shell.
+        private const string SessionStateKey = "MaritimeLMS.AutoApplyAll.v3";
         private const int SettleFrames = 60;
 
         private static int _frameCount;
@@ -80,6 +80,7 @@ namespace MaritimeLMS.LessonsEditor
             {
                 Debug.Log("[Maritime LMS] AutoApplyAll starting...");
                 ApplyShipWheelGrab();
+                ApplyCabinShell();
                 ApplyCabinDecoration();
                 ApplyCabinExtraDetail();
                 Debug.Log("[Maritime LMS] AutoApplyAll complete.");
@@ -104,6 +105,19 @@ namespace MaritimeLMS.LessonsEditor
                 Undo.AddComponent<ShipWheelMouseGrab>(wheel.gameObject);
                 EditorUtility.SetDirty(wheel.gameObject);
                 Debug.Log("[Maritime LMS] AutoApplyAll: added ShipWheelMouseGrab");
+            }
+        }
+
+        private static void ApplyCabinShell()
+        {
+            try
+            {
+                CabinShellEditor.Run();
+                Debug.Log("[Maritime LMS] AutoApplyAll: cabin shell built");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Maritime LMS] AutoApplyAll: cabin shell build failed: {ex}");
             }
         }
 
