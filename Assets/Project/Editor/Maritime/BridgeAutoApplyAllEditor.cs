@@ -25,8 +25,8 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeAutoApplyAllEditor
     {
-        // v3: bumped to include Phase 34 cabin shell.
-        private const string SessionStateKey = "MaritimeLMS.AutoApplyAll.v3";
+        // v4: bumped to include Phase 35 helm-view camera fix.
+        private const string SessionStateKey = "MaritimeLMS.AutoApplyAll.v4";
         private const int SettleFrames = 60;
 
         private static int _frameCount;
@@ -83,6 +83,7 @@ namespace MaritimeLMS.LessonsEditor
                 ApplyCabinShell();
                 ApplyCabinDecoration();
                 ApplyCabinExtraDetail();
+                ApplyHelmViewFix();
                 Debug.Log("[Maritime LMS] AutoApplyAll complete.");
             }
             catch (Exception ex)
@@ -105,6 +106,19 @@ namespace MaritimeLMS.LessonsEditor
                 Undo.AddComponent<ShipWheelMouseGrab>(wheel.gameObject);
                 EditorUtility.SetDirty(wheel.gameObject);
                 Debug.Log("[Maritime LMS] AutoApplyAll: added ShipWheelMouseGrab");
+            }
+        }
+
+        private static void ApplyHelmViewFix()
+        {
+            try
+            {
+                HelmViewFixerEditor.Run();
+                Debug.Log("[Maritime LMS] AutoApplyAll: helm view fix applied");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Maritime LMS] AutoApplyAll: helm view fix failed: {ex}");
             }
         }
 
