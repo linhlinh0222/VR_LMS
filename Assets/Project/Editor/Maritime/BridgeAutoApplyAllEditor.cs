@@ -25,7 +25,8 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class BridgeAutoApplyAllEditor
     {
-        private const string SessionStateKey = "MaritimeLMS.AutoApplyAll.v1";
+        // v2: bumped to include Phase 33 extra detail.
+        private const string SessionStateKey = "MaritimeLMS.AutoApplyAll.v2";
         private const int SettleFrames = 60;
 
         private static int _frameCount;
@@ -80,6 +81,7 @@ namespace MaritimeLMS.LessonsEditor
                 Debug.Log("[Maritime LMS] AutoApplyAll starting...");
                 ApplyShipWheelGrab();
                 ApplyCabinDecoration();
+                ApplyCabinExtraDetail();
                 Debug.Log("[Maritime LMS] AutoApplyAll complete.");
             }
             catch (Exception ex)
@@ -115,6 +117,26 @@ namespace MaritimeLMS.LessonsEditor
             catch (Exception ex)
             {
                 Debug.LogError($"[Maritime LMS] AutoApplyAll: decoration build failed: {ex}");
+            }
+
+            Scene s = SceneManager.GetActiveScene();
+            if (s.IsValid())
+            {
+                EditorSceneManager.MarkSceneDirty(s);
+                EditorSceneManager.SaveScene(s);
+            }
+        }
+
+        private static void ApplyCabinExtraDetail()
+        {
+            try
+            {
+                CabinDetailExtraEditor.Run();
+                Debug.Log("[Maritime LMS] AutoApplyAll: cabin extra detail built");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Maritime LMS] AutoApplyAll: extra detail build failed: {ex}");
             }
 
             Scene s = SceneManager.GetActiveScene();
