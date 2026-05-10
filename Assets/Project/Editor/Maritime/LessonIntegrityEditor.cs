@@ -157,8 +157,9 @@ namespace MaritimeLMS.LessonsEditor
     [InitializeOnLoad]
     public static class LessonIntegrityAutoHook
     {
-        // v2: re-run after Phase 26 scaffolder fix.
-        private const string SessionStateKey = "MaritimeLMS.LessonIntegrityRan.v2";
+        // v3: re-run after Phase 27 DebriefView rebuilder so the integrity
+        // report reflects the new view component being present.
+        private const string SessionStateKey = "MaritimeLMS.LessonIntegrityRan.v3";
 
         static LessonIntegrityAutoHook() { EditorApplication.delayCall += MaybeRun; }
 
